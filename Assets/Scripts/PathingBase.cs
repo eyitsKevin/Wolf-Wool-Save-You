@@ -219,7 +219,7 @@ public class Pathing : MonoBehaviour
             if (checkLoc == finish)
             {
                 open.Clear();
-                open.Add(rightNode);
+                open.Add(leftNode);
                 return true;
             }
             else if (!closed.Contains(leftNode))
