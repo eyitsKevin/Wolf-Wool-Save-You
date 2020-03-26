@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Unsheared
+  - Sheared
+  - Sweater
+  - Clothed
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -15,7 +20,7 @@ TagManager:
   - 
   - Obstacle
   - Target
-  - 
+  - Sweater
   - 
   - 
   - 
