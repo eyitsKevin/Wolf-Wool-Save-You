@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*  ----- FIXIT NOTES -----
+ * 
+ *  - Create <bool checkWalkableArea(Vector2 loc)> method that checks the actual tilemap to see if a tile can be walked on. Use esti's tilemap info for it
+ *  - Figure out what I want returned if A-star cannot determine a path to the finish (currently null)
+ *  - Currently only considers everything the same room. Needs another entire function for determining best Astar approach from room to room (some of that is hardcoded)
+ *  - NEEDS TO BE TESTED
+ * 
+ */
+
+
 public class Pathing : MonoBehaviour
 {
     class TileNode
@@ -127,95 +138,107 @@ public class Pathing : MonoBehaviour
         //y+1
         Vector2 checkLoc = current.pos;
         checkLoc.y = checkLoc.y + 1.0f;
-        TileNode upNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
-        if (checkLoc == finish)
+        if (true) //FIXIT if (checkWalkableArea(checkLoc))
         {
-            open.Clear();
-            open.Add(upNode);
-            return true;
-        }
-        else if (!closed.Contains(upNode))
-        {
-            if (open.Count == 0)
+            TileNode upNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            if (checkLoc == finish)
             {
+                open.Clear();
                 open.Add(upNode);
+                return true;
             }
-            else
+            else if (!closed.Contains(upNode))
             {
-                insertionSort(upNode, 0, open.Count - 1);
+                if (open.Count == 0)
+                {
+                    open.Add(upNode);
+                }
+                else
+                {
+                    insertionSort(upNode, 0, open.Count - 1);
+                }
             }
         }
 
         //x+1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x + 1.0f;
-        TileNode rightNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
-        if (checkLoc == finish)
+        if (true) //FIXIT if (checkWalkableArea(checkLoc))
         {
-            open.Clear();
-            open.Add(rightNode);
-            return true;
-        }
-        else if (!closed.Contains(rightNode))
-        {
-            if (open.Count == 0)
+            TileNode rightNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            if (checkLoc == finish)
             {
+                open.Clear();
                 open.Add(rightNode);
+                return true;
             }
-            else
+            else if (!closed.Contains(rightNode))
             {
-                insertionSort(rightNode, 0, open.Count - 1);
+                if (open.Count == 0)
+                {
+                    open.Add(rightNode);
+                }
+                else
+                {
+                    insertionSort(rightNode, 0, open.Count - 1);
+                }
             }
         }
 
         //y-1
         checkLoc = current.pos;
         checkLoc.y = checkLoc.y - 1.0f;
-        TileNode downNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
-        if (checkLoc == finish)
+        if (true) //FIXIT if (checkWalkableArea(checkLoc))
         {
-            open.Clear();
-            open.Add(downNode);
-            return true;
-        }
-        else if (!closed.Contains(downNode))
-        {
-            if (open.Count == 0)
+            TileNode downNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            if (checkLoc == finish)
             {
+                open.Clear();
                 open.Add(downNode);
+                return true;
             }
-            else
+            else if (!closed.Contains(downNode))
             {
-                insertionSort(downNode, 0, open.Count - 1);
+                if (open.Count == 0)
+                {
+                    open.Add(downNode);
+                }
+                else
+                {
+                    insertionSort(downNode, 0, open.Count - 1);
+                }
             }
         }
 
         //x-1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x - 1.0f;
-        TileNode leftNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
-        if (checkLoc == finish)
+        if (true) //FIXIT if (checkWalkableArea(checkLoc))
         {
-            open.Clear();
-            open.Add(rightNode);
-            return true;
-        }
-        else if (!closed.Contains(leftNode))
-        {
-            if (open.Count == 0)
+            TileNode leftNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            if (checkLoc == finish)
             {
-                open.Add(leftNode);
+                open.Clear();
+                open.Add(rightNode);
+                return true;
             }
-            else
+            else if (!closed.Contains(leftNode))
             {
-                insertionSort(leftNode, 0, open.Count - 1);
+                if (open.Count == 0)
+                {
+                    open.Add(leftNode);
+                }
+                else
+                {
+                    insertionSort(leftNode, 0, open.Count - 1);
+                }
             }
         }
 
         return false;
     }
 
-    public List<Vector2> AStar(Vector2 start, Vector2 finish)
+    public List<Vector2> AStar_SameRoom(Vector2 start, Vector2 finish)
     {
         List<Vector2> path = new List<Vector2>();
 
@@ -237,7 +260,7 @@ public class Pathing : MonoBehaviour
         if (!endFound)
         {
             //no path found to finish!
-            return null; //?
+            return null; //FIXIT
         }
 
         //Follow the finish back to the start
