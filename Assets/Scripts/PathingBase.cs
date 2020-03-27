@@ -5,7 +5,7 @@ using UnityEngine;
 
 /*  ----- FIXIT NOTES -----
  * 
- *  - Create <bool checkWalkableArea(Vector2 loc)> method that checks the actual tilemap to see if a tile can be walked on. Use esti's tilemap info for it
+ *  - I wasn't sure of a better way to get the GridManager object, so I did a FindObjectOfType - I dunno if it works
  *  - Figure out what I want returned if A-star cannot determine a path to the finish (currently null)
  *  - Currently only considers everything the same room. Needs another entire function for determining best Astar approach from room to room (some of that is hardcoded)
  *  - NEEDS TO BE TESTED
@@ -15,72 +15,8 @@ using UnityEngine;
 
 public class Pathing : MonoBehaviour
 {
-    class TileNode
-    {
-        public Vector2 pos;
-        public int cost;
-        public float heuristic_tileDistance;
-        public float heuristic_euclideanDistance;
-        public TileNode parent;
-
-        public TileNode(Vector2 loc, TileNode previous, int spacesSoFar, float heuristic_tile = 0.0f, float heuristic_euclidean = 0.0f)
-        {
-            pos = loc;
-            parent = previous;
-            cost = spacesSoFar;
-            heuristic_tileDistance = heuristic_tile;
-            heuristic_euclideanDistance = heuristic_euclidean;
-        }
-
-
-        //Override equals. Required for searching a list for the node
-        public override bool Equals(object obj)
-        {
-            TileNode node = (TileNode)obj;
-
-            if (node.pos == null)
-            {
-                return false;
-            }
-
-            return (pos == node.pos);
-        }
-
-        //Static comparison functions. Required for comparing node heuristics
-        public static bool operator > (TileNode node1, TileNode node2)
-        {
-            if (node1.cost + node1.heuristic_tileDistance > node2.cost + node2.heuristic_tileDistance)
-            {
-                return true;
-            }
-
-            if (node1.cost + node1.heuristic_tileDistance == node2.cost + node2.heuristic_tileDistance &&
-                node1.heuristic_euclideanDistance > node2.heuristic_euclideanDistance)
-            {
-                return true;
-            }
-
-            return false;
-        }
-        public static bool operator < (TileNode node1, TileNode node2)
-        {
-            if (node1.cost + node1.heuristic_tileDistance < node2.cost + node2.heuristic_tileDistance)
-            {
-                return true;
-            }
-
-            if (node1.cost + node1.heuristic_tileDistance == node2.cost + node2.heuristic_tileDistance &&
-                node1.heuristic_euclideanDistance < node2.heuristic_euclideanDistance)
-            {
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    List<TileNode> open = new List<TileNode>();
-    List<TileNode> closed = new List<TileNode>();
+    List<PathTileNode> open = new List<PathTileNode>();
+    List<PathTileNode> closed = new List<PathTileNode>();
 
     float tileDistance(Vector2 start, Vector2 finish)
     {
@@ -92,7 +28,7 @@ public class Pathing : MonoBehaviour
         return Mathf.Sqrt((start.x - finish.x) * (start.x - finish.x) + (start.y - finish.y) * (start.y - finish.y));
     }
 
-    int insertionSort(TileNode newNode, int minIndex, int maxIndex)
+    int insertionSort(PathTileNode newNode, int minIndex, int maxIndex)
     {
         //Check if done
         if (minIndex == maxIndex)
@@ -133,14 +69,16 @@ public class Pathing : MonoBehaviour
     }
 
     //Function returns a bool: whether or not the end has been found
-    bool addNeighbors(TileNode current, Vector2 finish)
+    bool addNeighbors(PathTileNode current, Vector2 finish)
     {
+        GridManager grid = (GridManager)GameObject.FindObjectOfType(typeof(GridManager)); //FIXIT make sure this works
+
         //y+1
         Vector2 checkLoc = current.pos;
         checkLoc.y = checkLoc.y + 1.0f;
-        if (true) //FIXIT if (checkWalkableArea(checkLoc))
+        if (grid.isWalkableTile(checkLoc))
         {
-            TileNode upNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            PathTileNode upNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
             {
                 open.Clear();
@@ -163,9 +101,9 @@ public class Pathing : MonoBehaviour
         //x+1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x + 1.0f;
-        if (true) //FIXIT if (checkWalkableArea(checkLoc))
+        if (grid.isWalkableTile(checkLoc))
         {
-            TileNode rightNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            PathTileNode rightNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
             {
                 open.Clear();
@@ -188,9 +126,9 @@ public class Pathing : MonoBehaviour
         //y-1
         checkLoc = current.pos;
         checkLoc.y = checkLoc.y - 1.0f;
-        if (true) //FIXIT if (checkWalkableArea(checkLoc))
+        if (grid.isWalkableTile(checkLoc))
         {
-            TileNode downNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            PathTileNode downNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
             {
                 open.Clear();
@@ -213,9 +151,9 @@ public class Pathing : MonoBehaviour
         //x-1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x - 1.0f;
-        if (true) //FIXIT if (checkWalkableArea(checkLoc))
+        if (grid.isWalkableTile(checkLoc))
         {
-            TileNode leftNode = new TileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
+            PathTileNode leftNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
             {
                 open.Clear();
@@ -242,10 +180,10 @@ public class Pathing : MonoBehaviour
     {
         List<Vector2> path = new List<Vector2>();
 
-        TileNode startNode = new TileNode(start, null, 0, tileDistance(start, finish), euclideanDistance(start, finish));
+        PathTileNode startNode = new PathTileNode(start, null, 0, tileDistance(start, finish), euclideanDistance(start, finish));
         open.Add(startNode);
 
-        TileNode currentNode = open[0];
+        PathTileNode currentNode = open[0];
 
         bool endFound = false;
         while (open.Count > 0 && !endFound)
@@ -273,5 +211,34 @@ public class Pathing : MonoBehaviour
         path.Insert(0, currentNode.pos); //same as start. might not need to add this
 
         return path;
+    }
+
+    public List<PathRoomLink> AStar_Rooms(PathRoom start, PathRoom finish)
+    {
+        List<PathRoomLink> path = new List<PathRoomLink>();
+
+        return path;
+    }
+
+    public List<Vector2> AStar(Vector2 start, Vector2 finish)
+    {
+        //step 1: consult the hardcoded list of room charts to see if the start & finish tiles are in the same room
+
+        //if tile of start is in the same room of tile of finish:
+        return AStar_SameRoom(start, finish);
+        //else, continue steps
+
+        //step 2: consult the hardcoded list of room charts to see the fastest route from start room to finish room
+
+        //step 3: use the results of step 2 to determine which exit of start room to move towards
+
+        //step 4: consult the hardcoded list of room charts to figure out the tile of the exit
+
+        //if tile of exit != start tile: AStar_SameRoom from current room to exit of current room
+        //else, continue steps
+
+        //step 5: consult the hardcoded list of room charts to figure out the tile of the next exit
+
+        //step 6: AStar_SameRoom to step 4's result
     }
 }

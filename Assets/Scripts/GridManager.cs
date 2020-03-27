@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class GridManager : MonoBehaviour
 {
     [SerializeField]
-    private Tilemap walkableTilemap;
+    public Tilemap walkableTilemap;
     public Vector3Int[,] tilemapsPosition;
     BoundsInt bounds;
     Camera camera;
@@ -51,5 +51,19 @@ public class GridManager : MonoBehaviour
         }
     }
 
+    public bool isWalkableTile(Vector2 coords)
+    {
+        for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++)
+        {
+            for (int y = bounds.yMin, j = 0; j < (bounds.size.y); y++, j++)
+            {
+                if (coords.x == x && coords.y == y && walkableTilemap.HasTile(new Vector3Int(x, y, 0)))
+                {
+                    return true;
+                }
+            }
+        }
 
+        return false;
+    }
 }
