@@ -7,7 +7,11 @@ using UnityEngine;
  * 
  *  - I wasn't sure of a better way to get the GridManager object, so I did a FindObjectOfType - I dunno if it works
  *  - Figure out what I want returned if A-star cannot determine a path to the finish (currently null)
- *  - Currently only considers everything the same room. Needs another entire function for determining best Astar approach from room to room (some of that is hardcoded)
+ *  - PathRoom currently has a statically increasing ID to separate all rooms, but if any of these functions add to this counter, it
+ *      probably ruins everything. Make sure they don't or find another way to set IDs
+ *  - Currently only considers everything the same room. Needs another entire function for determining best Astar approach from room
+ *      to room (some of that is hardcoded)
+ *  - Can't expand on this until I get rooms and links added, as well as ways to pull this data for use
  *  - NEEDS TO BE TESTED
  * 
  */
@@ -17,6 +21,8 @@ public class Pathing : MonoBehaviour
 {
     List<PathTileNode> open = new List<PathTileNode>();
     List<PathTileNode> closed = new List<PathTileNode>();
+    List<PathRoom> roomOpen = new List<PathRoom>();
+    List<PathRoom> roomClosed = new List<PathRoom>();
 
     float tileDistance(Vector2 start, Vector2 finish)
     {
@@ -28,7 +34,7 @@ public class Pathing : MonoBehaviour
         return Mathf.Sqrt((start.x - finish.x) * (start.x - finish.x) + (start.y - finish.y) * (start.y - finish.y));
     }
 
-    int insertionSort(PathTileNode newNode, int minIndex, int maxIndex)
+    int insertionSort_Node(PathTileNode newNode, int minIndex, int maxIndex)
     {
         //Check if done
         if (minIndex == maxIndex)
@@ -49,10 +55,10 @@ public class Pathing : MonoBehaviour
 
             if (newNode > open[divider])
             {
-                //Recursively get 
-                return insertionSort(newNode, divider + 1, maxIndex);
+                //Recursively check the next middlepoint
+                return insertionSort_Node(newNode, divider + 1, maxIndex);
             }
-            else if (newNode > open[divider])
+            else if (newNode < open[divider])
             {
                 if (divider == minIndex)
                 {
@@ -60,7 +66,47 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    return insertionSort(newNode, minIndex, divider - 1);
+                    return insertionSort_Node(newNode, minIndex, divider - 1);
+                }
+            }
+
+            return divider;
+        }
+    }
+
+    int insertionSort_Room(PathRoom newRoom, int minIndex, int maxIndex)
+    {
+        //Check if done
+        if (minIndex == maxIndex)
+        {
+            if (newRoom < roomOpen[minIndex])
+            {
+                return minIndex;
+            }
+            else
+            {
+                return minIndex + 1;
+            }
+        }
+        else
+        {
+            //Get the halfway point
+            int divider = Mathf.FloorToInt((maxIndex - minIndex) / 2.0f) + minIndex;
+
+            if (newRoom > roomOpen[divider])
+            {
+                //Recursively check the next middlepoint
+                return insertionSort_Room(newRoom, divider + 1, maxIndex);
+            }
+            else if (newRoom < roomOpen[divider])
+            {
+                if (divider == minIndex)
+                {
+                    return minIndex;
+                }
+                else
+                {
+                    return insertionSort_Room(newRoom, minIndex, divider - 1);
                 }
             }
 
@@ -93,7 +139,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort(upNode, 0, open.Count - 1);
+                    insertionSort_Node(upNode, 0, open.Count - 1);
                 }
             }
         }
@@ -118,7 +164,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort(rightNode, 0, open.Count - 1);
+                    insertionSort_Node(rightNode, 0, open.Count - 1);
                 }
             }
         }
@@ -143,7 +189,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort(downNode, 0, open.Count - 1);
+                    insertionSort_Node(downNode, 0, open.Count - 1);
                 }
             }
         }
@@ -168,16 +214,34 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort(leftNode, 0, open.Count - 1);
+                    insertionSort_Node(leftNode, 0, open.Count - 1);
                 }
             }
         }
 
-        return false;
+        return false; //end not found yet
+    }
+
+    void addLinks(PathRoom current, PathRoom finish)
+    {
+        for (int i = 0; i < current.links.Count; i++)
+        {
+            current.links[i].linkedRoom(current).cost = current.cost + current.links[i].tileDistance;
+            if (roomOpen.Count == 0)
+            {
+                roomOpen.Add(current.links[i].linkedRoom(current));
+            }
+            else
+            {
+                insertionSort_Room(current.links[i].linkedRoom(current), 0, roomOpen.Count - 1);
+            }
+        }
     }
 
     public List<Vector2> AStar_SameRoom(Vector2 start, Vector2 finish)
     {
+        open.Clear();
+        closed.Clear();
         List<Vector2> path = new List<Vector2>();
 
         PathTileNode startNode = new PathTileNode(start, null, 0, tileDistance(start, finish), euclideanDistance(start, finish));
@@ -213,9 +277,51 @@ public class Pathing : MonoBehaviour
         return path;
     }
 
-    public List<PathRoomLink> AStar_Rooms(PathRoom start, PathRoom finish)
+    public List<PathRoom> AStar_Rooms(PathRoom start, PathRoom finish)
     {
-        List<PathRoomLink> path = new List<PathRoomLink>();
+        roomOpen.Clear();
+        roomClosed.Clear();
+        List<PathRoom> path = new List<PathRoom>();
+
+        start.cost = 0;
+        roomOpen.Add(start);
+
+        PathRoom currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
+
+        bool endFound = false;
+        while (roomOpen.Count > 0 && !endFound)
+        {
+            currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
+            roomOpen.RemoveAt(0);
+            roomClosed.Add(currentRoom);
+
+            //Unlike with tiles, doesn't exit as soon as it finds the finish, because costs aren't all equal to one. Not actually
+            //  A-star unless we check all routes until the finish room ends up in the shortest position (index 0 in roomOpen list)
+            if (currentRoom.Equals(finish))
+            {
+                endFound = true;
+                break;
+            }
+            else
+            {
+                addLinks(currentRoom, finish);
+            }
+        }
+
+        if (!endFound)
+        {
+            //impossible to get to target room!
+            return null; //FIXIT
+        }
+
+        //Follow the finish back to the start
+        currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
+        while (currentRoom.previous != null)
+        {
+            path.Insert(0, currentRoom); //always insert at 0
+            currentRoom = currentRoom.previous;
+        }
+        path.Insert(0, currentRoom); //same as start. might not need to add this
 
         return path;
     }
