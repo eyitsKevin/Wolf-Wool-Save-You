@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Wolf : MonoBehaviour
 {
+    public static Wolf player;
+
     [SerializeField] float playerSpeed = 3;
     [SerializeField] GameObject sweater;
     public Vector2 targetPosition;
@@ -11,6 +13,11 @@ public class Wolf : MonoBehaviour
 
     void Start()
     {
+        if (player == null)
+        {
+            player = this;
+        }
+
         woolHeld = false;
         targetPosition = new Vector2(0, 0);
     }
@@ -65,5 +72,10 @@ public class Wolf : MonoBehaviour
                 woolHeld = false;
             }
         }
+    }
+
+    public static Vector2Int GetWolfPos()
+    {
+        return Vector2Int.RoundToInt(new Vector2(player.transform.position.x, player.transform.position.y));
     }
 }

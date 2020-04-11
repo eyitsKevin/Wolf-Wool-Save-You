@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathRoomLink : MonoBehaviour
+public class PathRoomLink
 {
     public PathRoom roomA;
     public PathRoom roomB;

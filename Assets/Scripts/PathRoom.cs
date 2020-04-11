@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathRoom : MonoBehaviour
+public class PathRoom
 {
     public static int ROOM_ID = 0;
     public static List<string> ROOM_NAMES = new List<string>();
 
-    public List<Vector2> exits;
+    public List<Vector2Int> exits;
     public List<PathRoomLink> links;
     public int id;
     public string name;
@@ -18,7 +18,7 @@ public class PathRoom : MonoBehaviour
     public PathRoom(string roomName)
     {
         name = roomName;
-        exits = new List<Vector2>();
+        exits = new List<Vector2Int>();
         links = new List<PathRoomLink>();
 
         //For easy lookup

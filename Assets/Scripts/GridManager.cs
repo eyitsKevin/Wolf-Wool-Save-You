@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     BoundsInt bounds;
     Camera camera;
 
-    private static GridManager instance;
+    public static GridManager instance;
 
     private void Awake()
     {

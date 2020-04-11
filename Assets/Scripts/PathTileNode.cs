@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathTileNode : MonoBehaviour
+public class PathTileNode
 {
-    public Vector2 pos;
+    public Vector2Int pos;
     public int cost;
     public float heuristic_tileDistance;
     public float heuristic_euclideanDistance;
     public PathTileNode parent;
 
-    public PathTileNode(Vector2 loc, PathTileNode previous, int spacesSoFar, float heuristic_tile = 0.0f, float heuristic_euclidean = 0.0f)
+    public PathTileNode(Vector2Int loc, PathTileNode previous, int spacesSoFar, float heuristic_tile = 0.0f, float heuristic_euclidean = 0.0f)
     {
         pos = loc;
         parent = previous;
