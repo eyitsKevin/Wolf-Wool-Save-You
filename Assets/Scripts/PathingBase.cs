@@ -24,6 +24,15 @@ public class Pathing : MonoBehaviour
     List<PathRoom> roomOpen = new List<PathRoom>();
     List<PathRoom> roomClosed = new List<PathRoom>();
 
+    public static Pathing pathing;
+    void Start()
+    {
+        if (pathing == null)
+        {
+            pathing = this;
+        }
+    }
+
     float tileDistance(Vector2 start, Vector2 finish)
     {
         return Mathf.Abs(start.x - finish.x) + Mathf.Abs(start.y - finish.y);
