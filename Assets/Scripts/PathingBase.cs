@@ -24,6 +24,15 @@ public class Pathing : MonoBehaviour
     List<PathRoom> roomOpen = new List<PathRoom>();
     List<PathRoom> roomClosed = new List<PathRoom>();
 
+    public static Pathing pathing;
+    void Start()
+    {
+        if (pathing == null)
+        {
+            pathing = this;
+        }
+    }
+
     float tileDistance(Vector2 start, Vector2 finish)
     {
         return Mathf.Abs(start.x - finish.x) + Mathf.Abs(start.y - finish.y);
@@ -139,7 +148,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort_Node(upNode, 0, open.Count - 1);
+                    open.Insert(insertionSort_Node(upNode, 0, open.Count - 1), upNode);
                 }
             }
         }
@@ -164,7 +173,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort_Node(rightNode, 0, open.Count - 1);
+                    open.Insert(insertionSort_Node(rightNode, 0, open.Count - 1), rightNode);
                 }
             }
         }
@@ -189,7 +198,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort_Node(downNode, 0, open.Count - 1);
+                    open.Insert(insertionSort_Node(downNode, 0, open.Count - 1), downNode);
                 }
             }
         }
@@ -214,7 +223,7 @@ public class Pathing : MonoBehaviour
                 }
                 else
                 {
-                    insertionSort_Node(leftNode, 0, open.Count - 1);
+                    open.Insert(insertionSort_Node(leftNode, 0, open.Count - 1), leftNode);
                 }
             }
         }
@@ -233,7 +242,7 @@ public class Pathing : MonoBehaviour
             }
             else
             {
-                insertionSort_Room(current.links[i].linkedRoom(current), 0, roomOpen.Count - 1);
+                roomOpen.Insert(insertionSort_Room(current.links[i].linkedRoom(current), 0, roomOpen.Count - 1), current.links[i].linkedRoom(current));
             }
         }
     }
