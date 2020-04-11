@@ -11,17 +11,34 @@ public class GridManager : MonoBehaviour
     BoundsInt bounds;
     Camera camera;
 
+    private static GridManager instance;
+
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+
+    }
+
     private void Start()
     {
         walkableTilemap.CompressBounds();
         bounds = walkableTilemap.cellBounds;
         camera = Camera.main;
-        GetTile();
+        PopulateTile();
         print(walkableTilemap);
     }
 
 
-    private void GetTile()
+    private void PopulateTile()
     {
         tilemapsPosition = new Vector3Int[bounds.size.x, bounds.size.y];
 
@@ -65,5 +82,15 @@ public class GridManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public static GridManager Instance
+    {
+        get { return instance; }
+    }
+
+    public TileBase GetTile(Vector3Int gridPos)
+    {
+        return walkableTilemap.GetTile(gridPos);
     }
 }
