@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: e8aae415ab9d8084e8bc258dd3bd67e4
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Flux Architect
+  fontNames:
+  - Flux Architect
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 9a25e3705a9c8e647af778a98dc30587, type: 3}
+  - {fileID: 12800000, guid: 220168b1f534765498a1000aba539611, type: 3}
+  - {fileID: 12800000, guid: 387d9c34b682ce645970a4abba6e2df4, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
