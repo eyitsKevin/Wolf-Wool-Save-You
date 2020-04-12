@@ -74,8 +74,5 @@ public class Wolf : MonoBehaviour
         }
     }
 
-    public static Vector2Int GetWolfPos()
-    {
-        return Vector2Int.RoundToInt(new Vector2(player.transform.position.x, player.transform.position.y));
-    }
+    public static Vector2Int GetWolfPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(player.transform.position.x, player.transform.position.y, 0)); }
 }

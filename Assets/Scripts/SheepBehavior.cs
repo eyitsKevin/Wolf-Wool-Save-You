@@ -170,7 +170,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     //Quick functions to reduce rewriting
-    Vector2Int GetSheepPos() { return Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y)); }
+    Vector2Int GetSheepPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(transform.position.x, transform.position.y, 0)); }
     bool NextPosUp() { return (pos.x == nextPos.x && pos.y + 1 == nextPos.y); }
     bool NextPosRight() { return (pos.x + 1 == nextPos.x && pos.y == nextPos.y); }
     bool NextPosDown() { return (pos.x == nextPos.x && pos.y - 1 == nextPos.y); }
