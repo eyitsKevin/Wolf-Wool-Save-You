@@ -66,11 +66,14 @@ public class SheepBehavior : MonoBehaviour
                     {
                         pos = GetSheepPos();
                         travelPath = Pathing.AStar(GetSheepPos(), Wolf.GetWolfPos());
-                        pathFound = true;
-
-                        for (int i = 0; i < travelPath.Count; i++)
+                        if (travelPath != null)
                         {
-                            Debug.Log("checking path to player (" + travelPath.Count + " tiles): " + travelPath[i].x + "," + travelPath[i].y);
+                            pathFound = true;
+
+                            for (int i = 0; i < travelPath.Count; i++)
+                            {
+                                Debug.Log("checking path to player (" + travelPath.Count + " tiles): " + travelPath[i].x + "," + travelPath[i].y);
+                            }
                         }
                     }
                 }
@@ -99,7 +102,7 @@ public class SheepBehavior : MonoBehaviour
             }
         }
 
-        if (!movingToNextTile)
+        if (!movingToNextTile && pathFound)
         {
             if (pathingType == SheepPathingType.Stationary) return;
 
@@ -138,7 +141,7 @@ public class SheepBehavior : MonoBehaviour
             {
                 movingToNextTile = false;
                 pathFound = false;
-                Debug.LogError("Next tile isn't adjacent! Current: (" + pos.x + "," + pos.y + ") & Next: (" + nextPos.x + "," + nextPos.y + ")");
+                //Debug.LogError("Next tile isn't adjacent! Current: (" + pos.x + "," + pos.y + ") & Next: (" + nextPos.x + "," + nextPos.y + ")");
             }
             //figure out where the next tile is from current and continue in that direction
         }

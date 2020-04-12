@@ -122,7 +122,7 @@ public class Pathing
         //y+1
         Vector2Int checkLoc = current.pos;
         checkLoc.y = checkLoc.y + 1;
-        if (true/*GridManager.instance.isWalkableTile(checkLoc)*/)
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode upNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -147,7 +147,7 @@ public class Pathing
         //x+1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x + 1;
-        if (true/*GridManager.instance.isWalkableTile(checkLoc)*/)
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode rightNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -172,7 +172,7 @@ public class Pathing
         //y-1
         checkLoc = current.pos;
         checkLoc.y = checkLoc.y - 1;
-        if (true/*GridManager.instance.isWalkableTile(checkLoc)*/)
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode downNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -197,7 +197,7 @@ public class Pathing
         //x-1
         checkLoc = current.pos;
         checkLoc.x = checkLoc.x - 1;
-        if (true/*GridManager.instance.isWalkableTile(checkLoc)*/)
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode leftNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
