@@ -17,33 +17,24 @@ using UnityEngine;
  */
 
 
-public class Pathing : MonoBehaviour
+public class Pathing
 {
-    List<PathTileNode> open = new List<PathTileNode>();
-    List<PathTileNode> closed = new List<PathTileNode>();
-    List<PathRoom> roomOpen = new List<PathRoom>();
-    List<PathRoom> roomClosed = new List<PathRoom>();
+    static List<PathTileNode> open = new List<PathTileNode>();
+    static List<PathTileNode> closed = new List<PathTileNode>();
+    static List<PathRoom> roomOpen = new List<PathRoom>();
+    static List<PathRoom> roomClosed = new List<PathRoom>();
 
-    public static Pathing pathing;
-    void Start()
-    {
-        if (pathing == null)
-        {
-            pathing = this;
-        }
-    }
-
-    float tileDistance(Vector2 start, Vector2 finish)
+    static float tileDistance(Vector2Int start, Vector2Int finish)
     {
         return Mathf.Abs(start.x - finish.x) + Mathf.Abs(start.y - finish.y);
     }
 
-    float euclideanDistance(Vector2 start, Vector2 finish)
+    static float euclideanDistance(Vector2Int start, Vector2Int finish)
     {
         return Mathf.Sqrt((start.x - finish.x) * (start.x - finish.x) + (start.y - finish.y) * (start.y - finish.y));
     }
 
-    int insertionSort_Node(PathTileNode newNode, int minIndex, int maxIndex)
+    static int insertionSort_Node(PathTileNode newNode, int minIndex, int maxIndex)
     {
         //Check if done
         if (minIndex == maxIndex)
@@ -83,7 +74,7 @@ public class Pathing : MonoBehaviour
         }
     }
 
-    int insertionSort_Room(PathRoom newRoom, int minIndex, int maxIndex)
+    static int insertionSort_Room(PathRoom newRoom, int minIndex, int maxIndex)
     {
         //Check if done
         if (minIndex == maxIndex)
@@ -124,14 +115,14 @@ public class Pathing : MonoBehaviour
     }
 
     //Function returns a bool: whether or not the end has been found
-    bool addNeighbors(PathTileNode current, Vector2 finish)
+    static bool addNeighbors(PathTileNode current, Vector2Int finish)
     {
-        GridManager grid = (GridManager)GameObject.FindObjectOfType(typeof(GridManager)); //FIXIT make sure this works
+        //GridManager grid = (GridManager)GameObject.FindObjectOfType(typeof(GridManager)); //FIXIT make sure this works
 
         //y+1
-        Vector2 checkLoc = current.pos;
-        checkLoc.y = checkLoc.y + 1.0f;
-        if (grid.isWalkableTile(checkLoc))
+        Vector2Int checkLoc = current.pos;
+        checkLoc.y = checkLoc.y + 1;
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode upNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -155,8 +146,8 @@ public class Pathing : MonoBehaviour
 
         //x+1
         checkLoc = current.pos;
-        checkLoc.x = checkLoc.x + 1.0f;
-        if (grid.isWalkableTile(checkLoc))
+        checkLoc.x = checkLoc.x + 1;
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode rightNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -180,8 +171,8 @@ public class Pathing : MonoBehaviour
 
         //y-1
         checkLoc = current.pos;
-        checkLoc.y = checkLoc.y - 1.0f;
-        if (grid.isWalkableTile(checkLoc))
+        checkLoc.y = checkLoc.y - 1;
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode downNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -205,8 +196,8 @@ public class Pathing : MonoBehaviour
 
         //x-1
         checkLoc = current.pos;
-        checkLoc.x = checkLoc.x - 1.0f;
-        if (grid.isWalkableTile(checkLoc))
+        checkLoc.x = checkLoc.x - 1;
+        if (GridManager.Instance.isWalkableTile(checkLoc))
         {
             PathTileNode leftNode = new PathTileNode(checkLoc, current, current.cost + 1, tileDistance(checkLoc, finish), euclideanDistance(checkLoc, finish));
             if (checkLoc == finish)
@@ -231,7 +222,7 @@ public class Pathing : MonoBehaviour
         return false; //end not found yet
     }
 
-    void addLinks(PathRoom current, PathRoom finish)
+    static void addLinks(PathRoom current, PathRoom finish)
     {
         for (int i = 0; i < current.links.Count; i++)
         {
@@ -247,11 +238,11 @@ public class Pathing : MonoBehaviour
         }
     }
 
-    public List<Vector2> AStar_SameRoom(Vector2 start, Vector2 finish)
+    static public List<Vector2Int> AStar_SameRoom(Vector2Int start, Vector2Int finish)
     {
         open.Clear();
         closed.Clear();
-        List<Vector2> path = new List<Vector2>();
+        List<Vector2Int> path = new List<Vector2Int>();
 
         PathTileNode startNode = new PathTileNode(start, null, 0, tileDistance(start, finish), euclideanDistance(start, finish));
         open.Add(startNode);
@@ -261,15 +252,16 @@ public class Pathing : MonoBehaviour
         bool endFound = false;
         while (open.Count > 0 && !endFound)
         {
+            //Debug.Log("Checking node: " + currentNode.pos.x + "," + currentNode.pos.y);
             currentNode = open[0];
             open.RemoveAt(0);
             closed.Add(currentNode);
-
             endFound = addNeighbors(currentNode, finish);
         }
 
         if (!endFound)
         {
+            Debug.LogError("No end found");
             //no path found to finish!
             return null; //FIXIT
         }
@@ -281,12 +273,12 @@ public class Pathing : MonoBehaviour
             path.Insert(0, currentNode.pos); //always insert at 0
             currentNode = currentNode.parent;
         }
-        path.Insert(0, currentNode.pos); //same as start. might not need to add this
+        //path.Insert(0, currentNode.pos); //same as start. might not need to add this
 
         return path;
     }
 
-    public List<PathRoom> AStar_Rooms(PathRoom start, PathRoom finish)
+    static public List<PathRoom> AStar_Rooms(PathRoom start, PathRoom finish)
     {
         roomOpen.Clear();
         roomClosed.Clear();
@@ -330,12 +322,15 @@ public class Pathing : MonoBehaviour
             path.Insert(0, currentRoom); //always insert at 0
             currentRoom = currentRoom.previous;
         }
-        path.Insert(0, currentRoom); //same as start. might not need to add this
+        //path.Insert(0, currentRoom); //same as start. might not need to add this
 
         return path;
     }
 
-    public List<Vector2> AStar(Vector2 start, Vector2 finish)
+    /// <summary>
+    /// Should return a list of Vector2Int from current position -> end position. Needs testing to be sure
+    /// </summary>
+    static public List<Vector2Int> AStar(Vector2Int start, Vector2Int finish)
     {
         //step 1: consult the hardcoded list of room charts to see if the start & finish tiles are in the same room
 

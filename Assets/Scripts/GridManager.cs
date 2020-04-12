@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     BoundsInt bounds;
     Camera camera;
 
-    private static GridManager instance;
+    public static GridManager instance;
 
     private void Awake()
     {
@@ -66,20 +66,41 @@ public class GridManager : MonoBehaviour
             Vector3Int gridpos = walkableTilemap.WorldToCell(world);
             print(walkableTilemap.GetTile(gridpos));
         }
-    }
-
-    public bool isWalkableTile(Vector2 coords)
-    {
-        for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++)
+        else if (Input.GetMouseButton(1))
         {
-            for (int y = bounds.yMin, j = 0; j < (bounds.size.y); y++, j++)
+            for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++)
             {
-                if (coords.x == x && coords.y == y && walkableTilemap.HasTile(new Vector3Int(x, y, 0)))
+                for (int y = bounds.yMin, j = 0; j < (bounds.size.y); y++, j++)
                 {
-                    return true;
+                    if (walkableTilemap.HasTile(new Vector3Int(x, y, 0)))
+                    {
+                        Debug.Log(x + "," + y + ": " + walkableTilemap.GetTile(new Vector3Int(x, y, 0)));
+                    }
                 }
             }
         }
+    }
+
+    public bool isWalkableTile(Vector2Int coords)
+    {
+        if (walkableTilemap.HasTile(new Vector3Int(coords.x, coords.y, 0)))
+        {
+            return true;
+        }
+
+        /*for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++)
+        {
+            for (int y = bounds.yMin, j = 0; j < (bounds.size.y); y++, j++)
+            {
+                if (Mathf.RoundToInt(coords.x) == Mathf.RoundToInt(x) && Mathf.RoundToInt(coords.y) == Mathf.RoundToInt(y))
+                {
+                    if (walkableTilemap.HasTile(new Vector3Int(x, y, 0)))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }*/
 
         return false;
     }
