@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SheepBehavior : MonoBehaviour
 {
+    // In order to access the Sheep's class
+    private Sheep sheep;
     public enum SheepPathingType
     {
         Stationary,
@@ -30,6 +33,10 @@ public class SheepBehavior : MonoBehaviour
     SheepPathingType pathingType;
     List<Vector2Int> travelPath;
 
+    // Patrol AI
+    private int patrolSpotsIndex;
+    public PatrolSpot[] aiPatrolSpots;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,9 +44,25 @@ public class SheepBehavior : MonoBehaviour
         movingToNextTile = false;
         travelPath = new List<Vector2Int>();
 
-        pathingType = SheepPathingType.ToPlayer;
-
+        pathingType = SheepPathingType.Patrolling;
+        sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
+
+        // AI has a patrol spot
+        if (aiPatrolSpots.Length > 0)
+        {
+            Vector3 min = aiPatrolSpots[patrolSpotsIndex].GetPosition;
+
+            for (int i = 0; i < aiPatrolSpots.Length; i++)
+            {
+                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].GetPosition))
+                {
+                    min = aiPatrolSpots[i].GetPosition;
+                    patrolSpotsIndex = i;
+                }
+            }
+
+        }
     }
 
     // Update is called once per frame
@@ -53,11 +76,34 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.Patrolling:
                 //move along designated path, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
+               if (!movingToNextTile && aiPatrolSpots.Length > 0)
+                {
+                    if (!sheep.IsSheared)
+                    {
+                        pos = GetSheepPos();
+
+                        travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
+
+                        if (travelPath != null)
+                        {
+                            pathFound = true;
+                            float dist = Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].GetPosition);
+                            if (dist < 1.8f)
+                            {
+                                pathFound = false;
+                                travelPath = null;
+                                patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
+                            } 
+
+                        }
+
+                    }
+                }
                 break;
 
             case SheepPathingType.ToSweater:
                 //check if a path has already been made and follow that path if so, otherwise make a path to the sweater first
-                break;
+                break; 
 
             case SheepPathingType.ToPlayer:
                 if (!movingToNextTile)
@@ -170,6 +216,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     //Quick functions to reduce rewriting
+    Vector2Int PositionToWorldVector2Int(Vector2 position) { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(position.x, position.y, 0)); }
     Vector2Int GetSheepPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(transform.position.x, transform.position.y, 0)); }
     bool NextPosUp() { return (pos.x == nextPos.x && pos.y + 1 == nextPos.y); }
     bool NextPosRight() { return (pos.x + 1 == nextPos.x && pos.y == nextPos.y); }

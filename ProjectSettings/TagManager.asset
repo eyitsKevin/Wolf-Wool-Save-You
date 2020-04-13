@@ -21,7 +21,7 @@ TagManager:
   - Obstacle
   - Target
   - Sweater
-  - 
+  - Tilemaps
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Tilemaps
+    uniqueID: 370982095
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

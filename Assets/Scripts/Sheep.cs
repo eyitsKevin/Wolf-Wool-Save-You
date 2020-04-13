@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Sheep : MonoBehaviour
 {
+    private bool sheared;
+
     void Update()
     {
         // Set state according to current tag
@@ -26,4 +28,6 @@ public class Sheep : MonoBehaviour
             this.transform.GetChild(2).gameObject.SetActive(true);
         }
     }
+
+    public bool IsSheared { get { return sheared; } set { this.sheared = value; } }
 }
