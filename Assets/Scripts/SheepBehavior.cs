@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SheepBehavior : MonoBehaviour
 {
@@ -32,6 +33,10 @@ public class SheepBehavior : MonoBehaviour
     SheepPathingType pathingType;
     List<Vector2Int> travelPath;
 
+    // Patrol AI
+    private int patrolSpotsIndex;
+    public Transform[] aiPatrolSpots;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,9 +44,25 @@ public class SheepBehavior : MonoBehaviour
         movingToNextTile = false;
         travelPath = new List<Vector2Int>();
 
-        pathingType = SheepPathingType.ToPlayer;
+        pathingType = SheepPathingType.Patrolling;
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
+
+        // AI has a patrol spot
+        if (aiPatrolSpots.Length > 0)
+        {
+            Vector3 min = aiPatrolSpots[patrolSpotsIndex].position;
+
+            for (int i = 0; i < aiPatrolSpots.Length; i++)
+            {
+                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].position))
+                {
+                    min = aiPatrolSpots[i].position;
+                    patrolSpotsIndex = i;
+                }
+            }
+
+        }
     }
 
     // Update is called once per frame
@@ -58,6 +79,28 @@ public class SheepBehavior : MonoBehaviour
                 if (!sheep.IsSheared)
                 {
                     pos = GetSheepPos();
+
+                    travelPath = Pathing.AStar(pos, (Vector2Int) GridManager.Instance.walkableTilemap.WorldToCell(aiPatrolSpots[patrolSpotsIndex].position));
+
+                    if (travelPath != null)
+                    {
+                        pathFound = true;
+
+                        if (Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].position) < 0.2f)
+                        {
+                            pathFound = false;
+                            travelPath = null;
+                            patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
+                        }
+
+                        for (int i = 0; i < travelPath.Count; i++)
+                        {
+                            Debug.Log("checking path to player (" + travelPath.Count + " tiles): " + travelPath[i].x + "," + travelPath[i].y);
+                        }
+                    }
+
+
+
                 }
                 break;
 

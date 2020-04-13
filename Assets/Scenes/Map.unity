@@ -14400,6 +14400,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Patrol Sheep
       objectReference: {fileID: 0}
+    - target: {fileID: 869997603937407311, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 869997604526469206, guid: 12d92d77c58a7f54192bff579e41be08,
         type: 3}
       propertyPath: m_RootOrder
@@ -14410,6 +14415,26 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2367908550536300778, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: aiPatrolSpots.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2367908550536300778, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: aiPatrolSpots.Array.data[0]
+      value: 
+      objectReference: {fileID: 1032391598}
+    - target: {fileID: 2367908550536300778, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: aiPatrolSpots.Array.data[1]
+      value: 
+      objectReference: {fileID: 1890695919}
+    - target: {fileID: 2367908550536300778, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: aiPatrolSpots.Array.data[2]
+      value: 
+      objectReference: {fileID: 1115925935}
     - target: {fileID: 8276950312225515719, guid: 12d92d77c58a7f54192bff579e41be08,
         type: 3}
       propertyPath: m_RootOrder
@@ -133348,6 +133373,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Sheep
+      objectReference: {fileID: 0}
+    - target: {fileID: 869997603937407311, guid: 12d92d77c58a7f54192bff579e41be08,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8276950312225515718, guid: 12d92d77c58a7f54192bff579e41be08,
         type: 3}
