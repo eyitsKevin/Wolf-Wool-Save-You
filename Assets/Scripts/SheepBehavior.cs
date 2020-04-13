@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SheepBehavior : MonoBehaviour
 {
+    // In order to access the Sheep's class
+    private Sheep sheep;
     public enum SheepPathingType
     {
         Stationary,
@@ -38,7 +40,7 @@ public class SheepBehavior : MonoBehaviour
         travelPath = new List<Vector2Int>();
 
         pathingType = SheepPathingType.ToPlayer;
-
+        sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
     }
 
@@ -53,6 +55,10 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.Patrolling:
                 //move along designated path, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
+                if (!sheep.IsSheared)
+                {
+                    pos = GetSheepPos();
+                }
                 break;
 
             case SheepPathingType.ToSweater:
