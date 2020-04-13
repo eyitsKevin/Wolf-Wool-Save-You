@@ -35,7 +35,7 @@ public class SheepBehavior : MonoBehaviour
 
     // Patrol AI
     private int patrolSpotsIndex;
-    public Transform[] aiPatrolSpots;
+    public PatrolSpot[] aiPatrolSpots;
 
     // Start is called before the first frame update
     void Start()
@@ -51,13 +51,13 @@ public class SheepBehavior : MonoBehaviour
         // AI has a patrol spot
         if (aiPatrolSpots.Length > 0)
         {
-            Vector3 min = aiPatrolSpots[patrolSpotsIndex].position;
+            Vector3 min = aiPatrolSpots[patrolSpotsIndex].GetPosition;
 
             for (int i = 0; i < aiPatrolSpots.Length; i++)
             {
-                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].position))
+                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].GetPosition))
                 {
-                    min = aiPatrolSpots[i].position;
+                    min = aiPatrolSpots[i].GetPosition;
                     patrolSpotsIndex = i;
                 }
             }
@@ -76,37 +76,34 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.Patrolling:
                 //move along designated path, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
-                if (!sheep.IsSheared)
+               if (!movingToNextTile && aiPatrolSpots.Length > 0)
                 {
-                    pos = GetSheepPos();
-
-                    travelPath = Pathing.AStar(pos, (Vector2Int) GridManager.Instance.walkableTilemap.WorldToCell(aiPatrolSpots[patrolSpotsIndex].position));
-
-                    if (travelPath != null)
+                    if (!sheep.IsSheared)
                     {
-                        pathFound = true;
+                        pos = GetSheepPos();
 
-                        if (Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].position) < 0.2f)
+                        travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
+
+                        if (travelPath != null)
                         {
-                            pathFound = false;
-                            travelPath = null;
-                            patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
+                            pathFound = true;
+                            float dist = Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].GetPosition);
+                            if (dist < 1.8f)
+                            {
+                                pathFound = false;
+                                travelPath = null;
+                                patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
+                            } 
+
                         }
 
-                        for (int i = 0; i < travelPath.Count; i++)
-                        {
-                            Debug.Log("checking path to player (" + travelPath.Count + " tiles): " + travelPath[i].x + "," + travelPath[i].y);
-                        }
                     }
-
-
-
                 }
                 break;
 
             case SheepPathingType.ToSweater:
                 //check if a path has already been made and follow that path if so, otherwise make a path to the sweater first
-                break;
+                break; 
 
             case SheepPathingType.ToPlayer:
                 if (!movingToNextTile)
@@ -219,6 +216,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     //Quick functions to reduce rewriting
+    Vector2Int PositionToWorldVector2Int(Vector2 position) { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(position.x, position.y, 0)); }
     Vector2Int GetSheepPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(transform.position.x, transform.position.y, 0)); }
     bool NextPosUp() { return (pos.x == nextPos.x && pos.y + 1 == nextPos.y); }
     bool NextPosRight() { return (pos.x + 1 == nextPos.x && pos.y == nextPos.y); }
