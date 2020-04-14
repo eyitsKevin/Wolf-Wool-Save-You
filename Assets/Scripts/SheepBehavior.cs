@@ -13,7 +13,8 @@ public class SheepBehavior : MonoBehaviour
         Patrolling,
         ToSweater,
         ToPlayer,
-        Fleeing
+        Fleeing,
+        Returning
     }
 
     public enum SheepDirection
@@ -36,6 +37,8 @@ public class SheepBehavior : MonoBehaviour
     public SheepPathingType oldPathingType;
     public List<Vector2Int> travelPath;
 
+    Wolf wolf;
+
     // Patrol AI
     private int patrolSpotsIndex;
     public PatrolSpot[] aiPatrolSpots;
@@ -46,15 +49,16 @@ public class SheepBehavior : MonoBehaviour
         pathFound = false;
         movingToNextTile = false;
         travelPath = new List<Vector2Int>();
-
-        pathingType = SheepPathingType.Patrolling;
-        oldPathingType = SheepPathingType.Patrolling;
+        pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
+
+        wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
 
         // AI has a patrol spot
         if (aiPatrolSpots.Length > 0)
         {
+            pathingType = SheepPathingType.Patrolling;
             Vector3 min = aiPatrolSpots[patrolSpotsIndex].GetPosition;
 
             for (int i = 0; i < aiPatrolSpots.Length; i++)
@@ -65,8 +69,8 @@ public class SheepBehavior : MonoBehaviour
                     patrolSpotsIndex = i;
                 }
             }
-
         }
+        oldPathingType = pathingType;
     }
 
     // Update is called once per frame
@@ -80,7 +84,7 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.Patrolling:
                 //move along designated path, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
-               if (!movingToNextTile && aiPatrolSpots.Length > 0)
+                if (!movingToNextTile && aiPatrolSpots.Length > 0)
                 {
                     if (!sheep.IsSheared)
                     {
@@ -98,33 +102,29 @@ public class SheepBehavior : MonoBehaviour
                                 travelPath = null;
                                 patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
                             } 
-
                         }
-
                     }
                 }
                 break;
 
             case SheepPathingType.ToSweater:
-                //check if a path has already been made and follow that path if so, otherwise make a path to the sweater first
-                oldPos = GetSheepPos();
-
-                switch(oldPathingType)
+                //make naked sheep go to sweater, then return to its original path
+                if (!movingToNextTile)
                 {
-                    case SheepPathingType.Stationary:
-                        ToSweater(oldPos, SheepPathingType.Stationary);
-                        break;
-                    case SheepPathingType.Patrolling:
-                        ToSweater(oldPos, SheepPathingType.Patrolling);
-                        break;
-                    case SheepPathingType.ToPlayer:
-                        ToSweater(oldPos, SheepPathingType.ToPlayer);
-                        break;
-                    case SheepPathingType.Fleeing:
-                        ToSweater(oldPos, SheepPathingType.Fleeing);
-                        break;
-                }                
-
+                    if (this.tag == "Clothed")
+                    {
+                        pathingType = SheepPathingType.Returning;
+                    }
+                    else if (!pathFound || travelPath.Count == 0)
+                    {
+                        oldPos = GetSheepPos();
+                        travelPath = Pathing.AStar(oldPos, PositionToWorldVector2Int(sweaterPos));
+                        if (travelPath != null)
+                        {
+                            pathFound = true;
+                        }
+                    }
+                }
                 break; 
 
             case SheepPathingType.ToPlayer:
@@ -133,16 +133,21 @@ public class SheepBehavior : MonoBehaviour
                     if (!pathFound || travelPath.Count == 0 || SameRoomAsTarget() || PlayerChangedRooms())
                     {
                         pos = GetSheepPos();
+                        oldPos = GetSheepPos();
                         travelPath = Pathing.AStar(GetSheepPos(), Wolf.GetWolfPos());
                         if (travelPath != null)
                         {
                             pathFound = true;
 
-                            for (int i = 0; i < travelPath.Count; i++)
+                            /*for (int i = 0; i < travelPath.Count; i++)
                             {
                                 Debug.Log("checking path to player (" + travelPath.Count + " tiles): " + travelPath[i].x + "," + travelPath[i].y);
-                            }
+                            }*/
                         }
+                    }
+                    if (wolf.escaped) // Return to old position if wolf escapes sheep's FoV
+                    {
+                        pathingType = SheepPathingType.Returning;
                     }
                 }
 
@@ -151,7 +156,25 @@ public class SheepBehavior : MonoBehaviour
                 break;
 
             case SheepPathingType.Fleeing:
-                //flee away from source?
+                //only occurs if near a wolf howl
+                break;
+
+            case SheepPathingType.Returning:
+                if (!movingToNextTile)
+                {
+                    if (pos == oldPos)
+                    {
+                        pathingType = oldPathingType;
+                    }
+                    else if (!pathFound || travelPath.Count == 0)
+                    {
+                        travelPath = Pathing.AStar(GetSheepPos(), oldPos);
+                        if (travelPath != null)
+                        {
+                            pathFound = true;
+                        }
+                    }
+                }
                 break;
         }
 
@@ -235,33 +258,6 @@ public class SheepBehavior : MonoBehaviour
     {
         //FIXIT actually do checking, once rooms are coded in
         return false;
-    }
-
-    void ToSweater(Vector2Int oldPosition, SheepPathingType sheepPathingType)
-    {
-        if(!movingToNextTile)
-        {
-            pos = GetSheepPos();
-
-            travelPath = Pathing.AStar(pos, sweaterPos);
-
-            if (travelPath != null)
-            {
-                pathFound = true;
-            }
-            else
-            {
-                travelPath = Pathing.AStar(pos, oldPosition);
-                pathFound = true;
-
-                if (pos == oldPosition)
-                {
-                    pathingType = sheepPathingType;
-                    pathFound = false;
-                }
-            }
-
-        }
     }
 
     //Quick functions to reduce rewriting

@@ -10,6 +10,7 @@ public class Wolf : MonoBehaviour
     [SerializeField] GameObject sweater;
     public Vector2 targetPosition;
     public bool woolHeld;
+    public bool escaped;
 
     void Start()
     {
@@ -68,7 +69,7 @@ public class Wolf : MonoBehaviour
             if (Input.GetMouseButtonDown(1))
             {
                 Instantiate(sweater, this.transform.position, Quaternion.identity);
-                targetPosition = Camera.main.ScreenToWorldPoint(new Vector3((int)Input.mousePosition.x, (int)Input.mousePosition.y, 0));
+                targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
                 woolHeld = false;
             }
         }

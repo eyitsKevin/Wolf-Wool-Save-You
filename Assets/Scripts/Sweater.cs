@@ -25,6 +25,7 @@ public class Sweater : MonoBehaviour
         // Only closest naked sheep moves to this sweater once it acquires the "Sweater" tag
         if (GameObject.FindGameObjectsWithTag("Sheared").Length > 0 && this.tag == "Sweater")
         {
+            this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
             GameObject[] nakedSheep = GameObject.FindGameObjectsWithTag("Sheared");
             proximity = (nakedSheep[0].transform.position - this.transform.position).magnitude;
             nearestSheep = nakedSheep[0];
@@ -39,7 +40,6 @@ public class Sweater : MonoBehaviour
             }
 
             // Move nearest sheep to this sweater
-            //nearestSheep.transform.position = Vector2.MoveTowards(nearestSheep.transform.position, this.transform.position, sheepSpeed * Time.deltaTime);
             nearestSheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.ToSweater;
             nearestSheep.GetComponent<SheepBehavior>().sweaterPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
@@ -58,16 +58,16 @@ public class Sweater : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Cannot throw sweater beyond obstacles
-        if (collision.gameObject.layer == 8)
+        if (collision.gameObject.layer == 8 || (collision.gameObject.layer == 11 && collision.gameObject.tag == "Wall"))
         {
             sweaterSpeed = 0;
             this.tag = "Sweater";
         }
 
-        // Destroy sweater once nearest sheep reaches it
-        if (collision.gameObject == nearestSheep)
+        // Destroy sweater once a sheared sheep reaches it
+        if (collision.gameObject.tag == "Sheared")
         {
-            nearestSheep.tag = "Clothed";
+            collision.gameObject.tag = "Clothed";
             Destroy(gameObject);
         }
     }
