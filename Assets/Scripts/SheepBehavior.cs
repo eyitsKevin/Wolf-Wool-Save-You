@@ -31,8 +31,9 @@ public class SheepBehavior : MonoBehaviour
     Vector2Int nextPos;
     Vector2Int oldPos;
     public Vector2Int sweaterPos;
-    public bool pathFound;
-    public bool movingToNextTile;
+    Quaternion oldRot;
+    bool pathFound;
+    bool movingToNextTile;
     public bool fleeing;
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
@@ -82,6 +83,11 @@ public class SheepBehavior : MonoBehaviour
             case SheepPathingType.Stationary:
                 //don't move if not sheared
                 oldPos = GetSheepPos();
+                oldRot = transform.GetChild(3).rotation;
+                if (transform.GetChild(3).rotation != oldRot) // reset FoV to old rotation once returned to old position
+                {
+                    transform.GetChild(3).rotation = oldRot;
+                }
                 break;
 
             case SheepPathingType.Patrolling:
@@ -221,18 +227,22 @@ public class SheepBehavior : MonoBehaviour
             if (NextPosUp())
             {
                 transform.Translate(new Vector3(0, movementSpeed, 0) * Time.deltaTime);
+                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0 ,0), 360 * Time.deltaTime);
             }
             else if (NextPosRight())
             {
                 transform.Translate(new Vector3(movementSpeed, 0, 0) * Time.deltaTime);
+                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, -90), 360 * Time.deltaTime);
             }
             else if (NextPosDown())
             {
                 transform.Translate(new Vector3(0, -movementSpeed, 0) * Time.deltaTime);
+                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, 180), 360 * Time.deltaTime);
             }
             else if (NextPosLeft())
             {
                 transform.Translate(new Vector3(-movementSpeed, 0, 0) * Time.deltaTime);
+                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, 90), 360 * Time.deltaTime);
             }
             else
             {

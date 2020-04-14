@@ -45,7 +45,7 @@ public class Sweater : MonoBehaviour
             
             proximity = (nearestSheep.transform.position - this.transform.position).magnitude;
 
-            if (proximity < 2) // change layer only if sheep is about to pick up the shirt
+            if (proximity < 3) // change layer only if sheep is about to pick up the shirt
             {
                 this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
             }
