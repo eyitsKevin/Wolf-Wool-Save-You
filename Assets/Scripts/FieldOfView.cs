@@ -162,7 +162,7 @@ public class FieldOfView : MonoBehaviour
         }
         else
         {
-            Debug.Log("Didn't hit");
+            //Debug.Log("Didn't hit");
             return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
         }
     }

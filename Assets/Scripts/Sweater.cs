@@ -7,6 +7,7 @@ public class Sweater : MonoBehaviour
     [SerializeField] float sweaterSpeed = 20;
     [SerializeField] float sheepSpeed = 3;
     public GameObject nearestSheep;
+    SheepBehavior nearestSheepBehaviour;
     float proximity;
     Vector2 targetPosition;
 
@@ -40,8 +41,9 @@ public class Sweater : MonoBehaviour
             }
 
             // Move nearest sheep to this sweater
-            nearestSheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.ToSweater;
-            nearestSheep.GetComponent<SheepBehavior>().sweaterPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+            nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
+            nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
+            nearestSheepBehaviour.sweaterPos = nearestSheepBehaviour.PositionToWorldVector2Int(new Vector2(transform.position.x, transform.position.y));
 
             // Face nearest sheep in direction of this sweater
             if (nearestSheep.transform.position.x < this.transform.position.x)

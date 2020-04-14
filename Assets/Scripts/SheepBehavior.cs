@@ -31,8 +31,9 @@ public class SheepBehavior : MonoBehaviour
     Vector2Int nextPos;
     Vector2Int oldPos;
     public Vector2Int sweaterPos;
-    bool pathFound;
-    bool movingToNextTile;
+    public bool pathFound;
+    public bool movingToNextTile;
+    public bool fleeing;
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
     public List<Vector2Int> travelPath;
@@ -79,7 +80,8 @@ public class SheepBehavior : MonoBehaviour
         switch (pathingType)
         {
             case SheepPathingType.Stationary:
-                //don't move, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
+                //don't move if not sheared
+                oldPos = GetSheepPos();
                 break;
 
             case SheepPathingType.Patrolling:
@@ -118,10 +120,14 @@ public class SheepBehavior : MonoBehaviour
                     else if (!pathFound || travelPath.Count == 0)
                     {
                         oldPos = GetSheepPos();
-                        travelPath = Pathing.AStar(oldPos, PositionToWorldVector2Int(sweaterPos));
+                        travelPath = Pathing.AStar(oldPos, sweaterPos);
                         if (travelPath != null)
                         {
                             pathFound = true;
+                            if (oldPathingType == SheepPathingType.Stationary) // force stationary sheep to move towards sweater
+                            {
+                                movingToNextTile = true;
+                            }
                         }
                     }
                 }
@@ -261,7 +267,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     //Quick functions to reduce rewriting
-    Vector2Int PositionToWorldVector2Int(Vector2 position) { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(position.x, position.y, 0)); }
+    public Vector2Int PositionToWorldVector2Int(Vector2 position) { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(position.x, position.y, 0)); }
     Vector2Int GetSheepPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(transform.position.x, transform.position.y, 0)); }
     bool NextPosUp() { return (pos.x == nextPos.x && pos.y + 1 == nextPos.y); }
     bool NextPosRight() { return (pos.x + 1 == nextPos.x && pos.y == nextPos.y); }
