@@ -5,10 +5,9 @@ using UnityEngine;
 public class Sweater : MonoBehaviour
 {
     [SerializeField] float sweaterSpeed = 20;
-    [SerializeField] float sheepSpeed = 3;
     public GameObject nearestSheep;
     SheepBehavior nearestSheepBehaviour;
-    float proximity;
+    public float proximity;
     Vector2 targetPosition;
 
     void Update()
@@ -26,7 +25,6 @@ public class Sweater : MonoBehaviour
         // Only closest naked sheep moves to this sweater once it acquires the "Sweater" tag
         if (GameObject.FindGameObjectsWithTag("Sheared").Length > 0 && this.tag == "Sweater")
         {
-            this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
             GameObject[] nakedSheep = GameObject.FindGameObjectsWithTag("Sheared");
             proximity = (nakedSheep[0].transform.position - this.transform.position).magnitude;
             nearestSheep = nakedSheep[0];
@@ -44,6 +42,13 @@ public class Sweater : MonoBehaviour
             nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
             nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
             nearestSheepBehaviour.sweaterPos = nearestSheepBehaviour.PositionToWorldVector2Int(new Vector2(transform.position.x, transform.position.y));
+            
+            proximity = (nearestSheep.transform.position - this.transform.position).magnitude;
+
+            if (proximity < 2) // change layer only if sheep is about to pick up the shirt
+            {
+                this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
+            }
 
             // Face nearest sheep in direction of this sweater
             if (nearestSheep.transform.position.x < this.transform.position.x)
