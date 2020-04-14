@@ -28,10 +28,13 @@ public class SheepBehavior : MonoBehaviour
 
     Vector2Int pos;
     Vector2Int nextPos;
+    Vector2Int oldPos;
+    public Vector2Int sweaterPos;
     bool pathFound;
     bool movingToNextTile;
-    SheepPathingType pathingType;
-    List<Vector2Int> travelPath;
+    public SheepPathingType pathingType;
+    public SheepPathingType oldPathingType;
+    public List<Vector2Int> travelPath;
 
     // Patrol AI
     private int patrolSpotsIndex;
@@ -45,6 +48,7 @@ public class SheepBehavior : MonoBehaviour
         travelPath = new List<Vector2Int>();
 
         pathingType = SheepPathingType.Patrolling;
+        oldPathingType = SheepPathingType.Patrolling;
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
 
@@ -67,7 +71,7 @@ public class SheepBehavior : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {        
         switch (pathingType)
         {
             case SheepPathingType.Stationary:
@@ -103,6 +107,24 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.ToSweater:
                 //check if a path has already been made and follow that path if so, otherwise make a path to the sweater first
+                oldPos = GetSheepPos();
+
+                switch(oldPathingType)
+                {
+                    case SheepPathingType.Stationary:
+                        ToSweater(oldPos, SheepPathingType.Stationary);
+                        break;
+                    case SheepPathingType.Patrolling:
+                        ToSweater(oldPos, SheepPathingType.Patrolling);
+                        break;
+                    case SheepPathingType.ToPlayer:
+                        ToSweater(oldPos, SheepPathingType.ToPlayer);
+                        break;
+                    case SheepPathingType.Fleeing:
+                        ToSweater(oldPos, SheepPathingType.Fleeing);
+                        break;
+                }                
+
                 break; 
 
             case SheepPathingType.ToPlayer:
@@ -213,6 +235,33 @@ public class SheepBehavior : MonoBehaviour
     {
         //FIXIT actually do checking, once rooms are coded in
         return false;
+    }
+
+    void ToSweater(Vector2Int oldPosition, SheepPathingType sheepPathingType)
+    {
+        if(!movingToNextTile)
+        {
+            pos = GetSheepPos();
+
+            travelPath = Pathing.AStar(pos, sweaterPos);
+
+            if (travelPath != null)
+            {
+                pathFound = true;
+            }
+            else
+            {
+                travelPath = Pathing.AStar(pos, oldPosition);
+                pathFound = true;
+
+                if (pos == oldPosition)
+                {
+                    pathingType = sheepPathingType;
+                    pathFound = false;
+                }
+            }
+
+        }
     }
 
     //Quick functions to reduce rewriting

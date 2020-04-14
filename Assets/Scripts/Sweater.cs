@@ -37,9 +37,11 @@ public class Sweater : MonoBehaviour
                     nearestSheep = sheep;
                 }
             }
-           
+
             // Move nearest sheep to this sweater
-            nearestSheep.transform.position = Vector2.MoveTowards(nearestSheep.transform.position, this.transform.position, sheepSpeed * Time.deltaTime);
+            //nearestSheep.transform.position = Vector2.MoveTowards(nearestSheep.transform.position, this.transform.position, sheepSpeed * Time.deltaTime);
+            nearestSheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.ToSweater;
+            nearestSheep.GetComponent<SheepBehavior>().sweaterPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
             // Face nearest sheep in direction of this sweater
             if (nearestSheep.transform.position.x < this.transform.position.x)
@@ -49,13 +51,6 @@ public class Sweater : MonoBehaviour
             else
             {
                 nearestSheep.transform.localScale = new Vector3(1, 1, 1);
-            }
-
-            // Destroy sweater once nearest sheep reaches it
-            if (nearestSheep.transform.position == this.transform.position)
-            {
-                nearestSheep.tag = "Clothed";
-                Destroy(gameObject);
             }
         }
     }
@@ -67,6 +62,13 @@ public class Sweater : MonoBehaviour
         {
             sweaterSpeed = 0;
             this.tag = "Sweater";
+        }
+
+        // Destroy sweater once nearest sheep reaches it
+        if (collision.gameObject == nearestSheep)
+        {
+            nearestSheep.tag = "Clothed";
+            Destroy(gameObject);
         }
     }
 }

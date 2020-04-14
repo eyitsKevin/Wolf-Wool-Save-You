@@ -19,7 +19,7 @@ public class Wolf : MonoBehaviour
         }
 
         woolHeld = false;
-        targetPosition = new Vector2(0, 0);
+        targetPosition = new Vector2Int(0, 0);
     }
 
     void Update()
@@ -68,7 +68,7 @@ public class Wolf : MonoBehaviour
             if (Input.GetMouseButtonDown(1))
             {
                 Instantiate(sweater, this.transform.position, Quaternion.identity);
-                targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+                targetPosition = Camera.main.ScreenToWorldPoint(new Vector3((int)Input.mousePosition.x, (int)Input.mousePosition.y, 0));
                 woolHeld = false;
             }
         }
