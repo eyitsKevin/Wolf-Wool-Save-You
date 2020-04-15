@@ -5,9 +5,9 @@ using UnityEngine;
 public class Sweater : MonoBehaviour
 {
     [SerializeField] float sweaterSpeed = 20;
-    [SerializeField] float sheepSpeed = 3;
     public GameObject nearestSheep;
-    float proximity;
+    SheepBehavior nearestSheepBehaviour;
+    public float proximity;
     Vector2 targetPosition;
 
     void Update()
@@ -37,25 +37,17 @@ public class Sweater : MonoBehaviour
                     nearestSheep = sheep;
                 }
             }
-           
+
             // Move nearest sheep to this sweater
-            nearestSheep.transform.position = Vector2.MoveTowards(nearestSheep.transform.position, this.transform.position, sheepSpeed * Time.deltaTime);
+            nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
+            nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
+            nearestSheepBehaviour.sweaterPos = nearestSheepBehaviour.PositionToWorldVector2Int(new Vector2(transform.position.x, transform.position.y));
+            
+            proximity = (nearestSheep.transform.position - this.transform.position).magnitude;
 
-            // Face nearest sheep in direction of this sweater
-            if (nearestSheep.transform.position.x < this.transform.position.x)
+            if (proximity < 3) // change layer only if sheep is about to pick up the shirt
             {
-                nearestSheep.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else
-            {
-                nearestSheep.transform.localScale = new Vector3(1, 1, 1);
-            }
-
-            // Destroy sweater once nearest sheep reaches it
-            if (nearestSheep.transform.position == this.transform.position)
-            {
-                nearestSheep.tag = "Clothed";
-                Destroy(gameObject);
+                this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
             }
         }
     }
@@ -63,10 +55,17 @@ public class Sweater : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Cannot throw sweater beyond obstacles
-        if (collision.gameObject.layer == 8)
+        if (collision.gameObject.layer == 8 || (collision.gameObject.layer == 11 && collision.gameObject.tag == "Wall"))
         {
             sweaterSpeed = 0;
             this.tag = "Sweater";
+        }
+
+        // Destroy sweater once a sheared sheep reaches it
+        if (collision.gameObject.tag == "Sheared")
+        {
+            collision.gameObject.tag = "Clothed";
+            Destroy(gameObject);
         }
     }
 }
