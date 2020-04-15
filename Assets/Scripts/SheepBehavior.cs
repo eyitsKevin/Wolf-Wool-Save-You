@@ -26,11 +26,13 @@ public class SheepBehavior : MonoBehaviour
 
     public float movementSpeed = 2.0f;
 
+    Transform slot;
     Vector2Int pos;
     Vector2Int nextPos;
     bool pathFound;
     bool movingToNextTile;
-    SheepPathingType pathingType;
+    [HideInInspector]
+    public SheepPathingType pathingType;
     List<Vector2Int> travelPath;
 
     // Patrol AI
@@ -80,23 +82,27 @@ public class SheepBehavior : MonoBehaviour
                 {
                     if (!sheep.IsSheared)
                     {
-                        pos = GetSheepPos();
-
-                        travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
-
-                        if (travelPath != null)
+                        if(slot != null)
                         {
-                            pathFound = true;
-                            float dist = Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].GetPosition);
-                            if (dist < 1.8f)
+                            pos = GetSheepPos();
+
+                            travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(slot.position));
+
+                            if (travelPath != null)
                             {
-                                pathFound = false;
-                                travelPath = null;
-                                patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
-                            } 
-
+                                pathFound = true;
+                                float dist = Vector3.Distance(transform.position, slot.position);
+                                if (dist < 1.8f)
+                                {
+                                    pathFound = false;
+                                    travelPath = null;
+                                }
+                            }
                         }
-
+                        else
+                        {
+                            Patrol();
+                        }
                     }
                 }
                 break;
@@ -193,6 +199,26 @@ public class SheepBehavior : MonoBehaviour
         }
     }
 
+    private void Patrol()
+    {
+        pos = GetSheepPos();
+
+        travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
+
+        if (travelPath != null)
+        {
+            pathFound = true;
+            float dist = Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].GetPosition);
+            if (dist < 1.8f)
+            {
+                pathFound = false;
+                travelPath = null;
+                patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
+            }
+
+        }
+    }
+
     bool SameRoomAsTarget()
     {
         //FIXIT actually do checking, once rooms are coded in
@@ -213,6 +239,12 @@ public class SheepBehavior : MonoBehaviour
     {
         //FIXIT actually do checking, once rooms are coded in
         return false;
+    }
+
+    // Group formation sets target slot for each sheep
+    public void SetSlot(Transform target)
+    {
+        slot = target;
     }
 
     //Quick functions to reduce rewriting
