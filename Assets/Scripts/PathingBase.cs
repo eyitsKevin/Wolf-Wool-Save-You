@@ -5,14 +5,7 @@ using UnityEngine;
 
 /*  ----- FIXIT NOTES -----
  * 
- *  - I wasn't sure of a better way to get the GridManager object, so I did a FindObjectOfType - I dunno if it works
- *  - Figure out what I want returned if A-star cannot determine a path to the finish (currently null)
- *  - PathRoom currently has a statically increasing ID to separate all rooms, but if any of these functions add to this counter, it
- *      probably ruins everything. Make sure they don't or find another way to set IDs
- *  - Currently only considers everything the same room. Needs another entire function for determining best Astar approach from room
- *      to room (some of that is hardcoded)
- *  - Can't expand on this until I get rooms and links added, as well as ways to pull this data for use
- *  - NEEDS TO BE TESTED
+ *  - there's still some random to fix
  * 
  */
 
@@ -67,46 +60,6 @@ public class Pathing
                 else
                 {
                     return insertionSort_Node(newNode, minIndex, divider - 1);
-                }
-            }
-
-            return divider;
-        }
-    }
-
-    static int insertionSort_Room(PathRoom newRoom, int minIndex, int maxIndex)
-    {
-        //Check if done
-        if (minIndex == maxIndex)
-        {
-            if (newRoom < roomOpen[minIndex])
-            {
-                return minIndex;
-            }
-            else
-            {
-                return minIndex + 1;
-            }
-        }
-        else
-        {
-            //Get the halfway point
-            int divider = Mathf.FloorToInt((maxIndex - minIndex) / 2.0f) + minIndex;
-
-            if (newRoom > roomOpen[divider])
-            {
-                //Recursively check the next middlepoint
-                return insertionSort_Room(newRoom, divider + 1, maxIndex);
-            }
-            else if (newRoom < roomOpen[divider])
-            {
-                if (divider == minIndex)
-                {
-                    return minIndex;
-                }
-                else
-                {
-                    return insertionSort_Room(newRoom, minIndex, divider - 1);
                 }
             }
 
@@ -222,22 +175,6 @@ public class Pathing
         return false; //end not found yet
     }
 
-    static void addLinks(PathRoom current, PathRoom finish)
-    {
-        for (int i = 0; i < current.links.Count; i++)
-        {
-            current.links[i].linkedRoom(current).cost = current.cost + current.links[i].tileDistance;
-            if (roomOpen.Count == 0)
-            {
-                roomOpen.Add(current.links[i].linkedRoom(current));
-            }
-            else
-            {
-                roomOpen.Insert(insertionSort_Room(current.links[i].linkedRoom(current), 0, roomOpen.Count - 1), current.links[i].linkedRoom(current));
-            }
-        }
-    }
-
     static public List<Vector2Int> AStar_SameRoom(Vector2Int start, Vector2Int finish)
     {
         open.Clear();
@@ -278,77 +215,97 @@ public class Pathing
         return path;
     }
 
-    static public List<PathRoom> AStar_Rooms(PathRoom start, PathRoom finish)
-    {
-        roomOpen.Clear();
-        roomClosed.Clear();
-        List<PathRoom> path = new List<PathRoom>();
-
-        start.cost = 0;
-        roomOpen.Add(start);
-
-        PathRoom currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
-
-        bool endFound = false;
-        while (roomOpen.Count > 0 && !endFound)
-        {
-            currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
-            roomOpen.RemoveAt(0);
-            roomClosed.Add(currentRoom);
-
-            //Unlike with tiles, doesn't exit as soon as it finds the finish, because costs aren't all equal to one. Not actually
-            //  A-star unless we check all routes until the finish room ends up in the shortest position (index 0 in roomOpen list)
-            if (currentRoom.Equals(finish))
-            {
-                endFound = true;
-                break;
-            }
-            else
-            {
-                addLinks(currentRoom, finish);
-            }
-        }
-
-        if (!endFound)
-        {
-            //impossible to get to target room!
-            return null; //FIXIT
-        }
-
-        //Follow the finish back to the start
-        currentRoom = roomOpen[0]; //FIXIT make sure this doesn't increment ROOM_ID in PathRoom class or this won't work
-        while (currentRoom.previous != null)
-        {
-            path.Insert(0, currentRoom); //always insert at 0
-            currentRoom = currentRoom.previous;
-        }
-        //path.Insert(0, currentRoom); //same as start. might not need to add this
-
-        return path;
-    }
-
     /// <summary>
     /// Should return a list of Vector2Int from current position -> end position. Needs testing to be sure
     /// </summary>
     static public List<Vector2Int> AStar(Vector2Int start, Vector2Int finish)
     {
-        //step 1: consult the hardcoded list of room charts to see if the start & finish tiles are in the same room
+        if (RoomManager.inSameRoom(start, finish))
+        {
+            return AStar_SameRoom(start, finish);
+        }
+        else if (RoomManager.getRoomOf(start) != null)
+        {
+            return AStar_SameRoom(start, RoomManager.getRoomOf(start).getExit());
+        }
+        else if (start.x <= RoomManager.MAINAREA_INNER_X && RoomManager.getRoomOf(finish) != null)
+        {
+            return AStar_SameRoom(start, RoomManager.getRoomOf(finish).getExit());
+        }
+        if (start.x <= RoomManager.MAINAREA_OUTER_X && finish.x <= RoomManager.MAINAREA_OUTER_X ||
+            start.x >= RoomManager.MAINAREA_INNER_X && finish.x >= RoomManager.MAINAREA_INNER_X)
+        {
+            return AStar_SameRoom(start, finish);
+        }
+        else if (start.x <= RoomManager.MAINAREA_INNER_X)
+        {
+            List<Vector2Int> node1 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_INNER_X + 1, RoomManager.MAINAREA_UPPERTUNNEL_LOWERY));
+            List<Vector2Int> node2 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_INNER_X + 1, RoomManager.MAINAREA_LOWERTUNNEL_UPPERY));
 
-        //if tile of start is in the same room of tile of finish:
-        return AStar_SameRoom(start, finish);
-        //else, continue steps
+            if (node1.Count < node2.Count)
+            {
+                List<Vector2Int> node3 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_INNER_X + 1, RoomManager.MAINAREA_UPPERTUNNEL_UPPERY));
+                if (node1.Count <= node3.Count)
+                {
+                    return node1;
+                }
+                else
+                {
+                    return node3;
+                }
+            }
+            else if (node1.Count > node2.Count)
+            {
+                List<Vector2Int> node3 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_INNER_X + 1, RoomManager.MAINAREA_LOWERTUNNEL_LOWERY));
+                if (node2.Count <= node3.Count)
+                {
+                    return node2;
+                }
+                else
+                {
+                    return node3;
+                }
+            }
+            else
+            {
+                //FIXIT randomly choose one
+                return node1;
+            }
+        }
+        else
+        {
+            List<Vector2Int> node1 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_OUTER_X - 1, RoomManager.MAINAREA_UPPERTUNNEL_LOWERY));
+            List<Vector2Int> node2 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_OUTER_X - 1, RoomManager.MAINAREA_LOWERTUNNEL_UPPERY));
 
-        //step 2: consult the hardcoded list of room charts to see the fastest route from start room to finish room
-
-        //step 3: use the results of step 2 to determine which exit of start room to move towards
-
-        //step 4: consult the hardcoded list of room charts to figure out the tile of the exit
-
-        //if tile of exit != start tile: AStar_SameRoom from current room to exit of current room
-        //else, continue steps
-
-        //step 5: consult the hardcoded list of room charts to figure out the tile of the next exit
-
-        //step 6: AStar_SameRoom to step 4's result
+            if (node1.Count < node2.Count)
+            {
+                List<Vector2Int> node3 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_OUTER_X - 1, RoomManager.MAINAREA_UPPERTUNNEL_UPPERY));
+                if (node1.Count <= node3.Count)
+                {
+                    return node1;
+                }
+                else
+                {
+                    return node3;
+                }
+            }
+            else if (node1.Count > node2.Count)
+            {
+                List<Vector2Int> node3 = AStar_SameRoom(start, new Vector2Int(RoomManager.MAINAREA_OUTER_X - 1, RoomManager.MAINAREA_LOWERTUNNEL_LOWERY));
+                if (node2.Count <= node3.Count)
+                {
+                    return node2;
+                }
+                else
+                {
+                    return node3;
+                }
+            }
+            else
+            {
+                //FIXIT randomly choose one
+                return node1;
+            }
+        }
     }
 }

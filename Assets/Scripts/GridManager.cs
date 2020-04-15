@@ -34,7 +34,7 @@ public class GridManager : MonoBehaviour
         bounds = walkableTilemap.cellBounds;
         camera = Camera.main;
         PopulateTile();
-        print(walkableTilemap);
+        //print(walkableTilemap);
     }
 
 
@@ -60,13 +60,14 @@ public class GridManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        /*if (Input.GetMouseButton(0))
         {
             Vector3 world = camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridpos = walkableTilemap.WorldToCell(world);
-            print(walkableTilemap.GetTile(gridpos));
+            //print(walkableTilemap.GetTile(gridpos));
+            print(gridpos);
         }
-        else if (Input.GetMouseButton(1))
+        /*else if (Input.GetMouseButton(1))
         {
             for (int x = bounds.xMin, i = 0; i < (bounds.size.x); x++, i++)
             {
@@ -78,7 +79,7 @@ public class GridManager : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
     }
 
     public bool isWalkableTile(Vector2Int coords)

@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 108897325}
   m_Layer: 11
   m_Name: Wall_WR
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2789,7 +2789,7 @@ GameObject:
   - component: {fileID: 441179825}
   m_Layer: 11
   m_Name: Last Room
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9506,7 +9506,7 @@ GameObject:
   - component: {fileID: 736203580}
   m_Layer: 11
   m_Name: Prison Room
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14910,7 +14910,7 @@ GameObject:
   - component: {fileID: 1204344559}
   m_Layer: 11
   m_Name: Wall_PR
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -142444,6 +142444,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dialogue
+      objectReference: {fileID: 0}
+    - target: {fileID: 2319693977323795207, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21, type: 3}
