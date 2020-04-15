@@ -11,6 +11,8 @@ public class Wolf : MonoBehaviour
     public Vector2 targetPosition;
     public bool woolHeld;
     public bool escaped;
+    public bool howl;
+    public float howlCooldown;
 
     void Start()
     {
@@ -21,6 +23,8 @@ public class Wolf : MonoBehaviour
 
         woolHeld = false;
         escaped = true;
+        howl = false;
+        howlCooldown = 0;
         targetPosition = new Vector2Int(0, 0);
     }
 
@@ -72,6 +76,57 @@ public class Wolf : MonoBehaviour
                 Instantiate(sweater, this.transform.position, Quaternion.identity);
                 targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
                 woolHeld = false;
+            }
+        }
+
+        // Press space to trigger howl if acquired and howl cooldown reaches 0
+        if (howl)
+        {
+            if (howlCooldown <= 0)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    AudioSource howlClip = GetComponent<AudioSource>();
+                    howlClip.Play();
+                    howlCooldown = 10;
+                }
+            }
+            else
+            {
+                howlCooldown -= Time.deltaTime;
+
+                if (howlCooldown >= 9)
+                {
+                    GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
+                    GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
+                    GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
+
+                    foreach (GameObject sheep in unshearedSheep)
+                    {
+                        if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                        {
+                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
+                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                        }
+                    }
+                    foreach (GameObject sheep in shearedSheep)
+                    {
+                        if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                        {
+                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
+                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                        }
+                    }
+                    foreach (GameObject sheep in clothedSheep)
+                    {
+                        if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                        {
+                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
+                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                        }
+                    }
+
+                }
             }
         }
     }

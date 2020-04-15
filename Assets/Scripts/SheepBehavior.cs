@@ -39,6 +39,7 @@ public class SheepBehavior : MonoBehaviour
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
     public List<Vector2Int> travelPath;
+    public float howlTimer;
 
     Wolf wolf;
 
@@ -57,6 +58,7 @@ public class SheepBehavior : MonoBehaviour
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
 
         wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
+        howlTimer = 0;
 
         // AI has a patrol spot
         if (aiPatrolSpots.Length > 0)
@@ -172,6 +174,19 @@ public class SheepBehavior : MonoBehaviour
 
             case SheepPathingType.Fleeing:
                 //only occurs if near a wolf howl
+                if (howlTimer > 0)
+                {
+                    howlTimer -= Time.deltaTime;
+                    transform.Translate((this.transform.position - wolf.transform.position).normalized * movementSpeed * Time.deltaTime);
+                    if (transform.localScale == new Vector3(1, 1, 1))
+                    {
+                        transform.localScale = new Vector3(-1, 1, 1);
+                    }
+                }
+                else
+                {
+                    pathingType = SheepPathingType.Returning; // change to ToPlayer if flee will only be used if all sheep chase the player
+                }
                 break;
 
             case SheepPathingType.Returning:
@@ -192,6 +207,7 @@ public class SheepBehavior : MonoBehaviour
                         if (travelPath != null)
                         {
                             pathFound = true;
+                            movingToNextTile = true;
                         }
                     }
                 }
