@@ -31,9 +31,10 @@ public class SheepBehavior : MonoBehaviour
     Vector2Int nextPos;
     Vector2Int oldPos;
     public Vector2Int sweaterPos;
+    Vector3 oldScale;
     Quaternion oldRot;
-    bool pathFound;
-    bool movingToNextTile;
+    public bool pathFound;
+    public bool movingToNextTile;
     public bool fleeing;
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
@@ -77,29 +78,32 @@ public class SheepBehavior : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {        
+    {   
         switch (pathingType)
         {
             case SheepPathingType.Stationary:
-                //don't move if not sheared
+                //sheep doesn't move, keep information on its position, FoV rotation and facing direction
+
                 oldPos = GetSheepPos();
                 oldRot = transform.GetChild(3).rotation;
-                if (transform.GetChild(3).rotation != oldRot) // reset FoV to old rotation once returned to old position
-                {
-                    transform.GetChild(3).rotation = oldRot;
-                }
+                oldScale = transform.localScale;
+
                 break;
 
             case SheepPathingType.Patrolling:
-                //move along designated path, but make sure not sheared and if so, keep an eye out for a sweater. also be alert for the wolf
+                //move along designated path, keep information on its current position, FoV rotation and facing direction
+                //make sure the patrol points are close to each other for more natural behaviour
+
+                oldPos = GetSheepPos();
+                oldRot = transform.GetChild(3).rotation;
+                oldScale = transform.localScale;
+
                 if (!movingToNextTile && aiPatrolSpots.Length > 0)
                 {
                     if (!sheep.IsSheared)
                     {
                         pos = GetSheepPos();
-
                         travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
-
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -125,15 +129,11 @@ public class SheepBehavior : MonoBehaviour
                     }
                     else if (!pathFound || travelPath.Count == 0)
                     {
-                        oldPos = GetSheepPos();
-                        travelPath = Pathing.AStar(oldPos, sweaterPos);
+                        pos = GetSheepPos();
+                        travelPath = Pathing.AStar(pos, sweaterPos);
                         if (travelPath != null)
                         {
                             pathFound = true;
-                            if (oldPathingType == SheepPathingType.Stationary) // force stationary sheep to move towards sweater
-                            {
-                                movingToNextTile = true;
-                            }
                         }
                     }
                 }
@@ -145,8 +145,7 @@ public class SheepBehavior : MonoBehaviour
                     if (!pathFound || travelPath.Count == 0 || SameRoomAsTarget() || PlayerChangedRooms())
                     {
                         pos = GetSheepPos();
-                        oldPos = GetSheepPos();
-                        travelPath = Pathing.AStar(GetSheepPos(), Wolf.GetWolfPos());
+                        travelPath = Pathing.AStar(pos, Wolf.GetWolfPos());
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -160,6 +159,10 @@ public class SheepBehavior : MonoBehaviour
                     if (wolf.escaped) // Return to old position if wolf escapes sheep's FoV
                     {
                         pathingType = SheepPathingType.Returning;
+                    }
+                    else
+                    {
+                        // increment detection meter
                     }
                 }
 
@@ -177,6 +180,11 @@ public class SheepBehavior : MonoBehaviour
                     if (pos == oldPos)
                     {
                         pathingType = oldPathingType;
+                        if (oldPathingType == SheepPathingType.Stationary)
+                        {
+                            transform.localScale = oldScale;
+                            transform.GetChild(3).rotation = oldRot;
+                        }
                     }
                     else if (!pathFound || travelPath.Count == 0)
                     {
@@ -233,6 +241,7 @@ public class SheepBehavior : MonoBehaviour
             {
                 transform.Translate(new Vector3(movementSpeed, 0, 0) * Time.deltaTime);
                 transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, -90), 360 * Time.deltaTime);
+                transform.localScale = new Vector3(-1, 1, 1);
             }
             else if (NextPosDown())
             {
@@ -243,6 +252,7 @@ public class SheepBehavior : MonoBehaviour
             {
                 transform.Translate(new Vector3(-movementSpeed, 0, 0) * Time.deltaTime);
                 transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, 90), 360 * Time.deltaTime);
+                transform.localScale = new Vector3(1, 1, 1);
             }
             else
             {

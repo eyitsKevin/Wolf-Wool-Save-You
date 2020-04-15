@@ -49,16 +49,6 @@ public class Sweater : MonoBehaviour
             {
                 this.gameObject.layer = 0; // can throw sweater past sheep; sheep can only collide with sweater once it lands
             }
-
-            // Face nearest sheep in direction of this sweater
-            if (nearestSheep.transform.position.x < this.transform.position.x)
-            {
-                nearestSheep.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else
-            {
-                nearestSheep.transform.localScale = new Vector3(1, 1, 1);
-            }
         }
     }
 

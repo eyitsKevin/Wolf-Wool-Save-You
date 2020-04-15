@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1395707215034674732}
   - component: {fileID: 1395707215034674731}
   - component: {fileID: 1395707215034674730}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wolf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,6 +101,7 @@ MonoBehaviour:
   sweater: {fileID: 1399191938737871619, guid: a6e84e980a43dde47b71dd1de17619e8, type: 3}
   targetPosition: {x: 0, y: 0}
   woolHeld: 0
+  escaped: 0
 --- !u!70 &1395707215034674731
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

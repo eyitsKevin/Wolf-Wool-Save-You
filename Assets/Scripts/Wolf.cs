@@ -20,6 +20,7 @@ public class Wolf : MonoBehaviour
         }
 
         woolHeld = false;
+        escaped = true;
         targetPosition = new Vector2Int(0, 0);
     }
 

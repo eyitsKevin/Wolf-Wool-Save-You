@@ -21,6 +21,9 @@ public class FieldOfView : MonoBehaviour
 
     public int edgeResolveIterations;
     private GameObject detectorComponent;
+
+    Wolf wolf;
+
     void Start()
     {
         viewMesh = new Mesh();
@@ -28,6 +31,8 @@ public class FieldOfView : MonoBehaviour
         meshFilter.mesh = viewMesh;
         
         StartCoroutine(FindTargetsWithDelay(0.2f));
+
+        wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
     }
 
     private void LateUpdate()
@@ -45,6 +50,17 @@ public class FieldOfView : MonoBehaviour
 
     void FindVisibleTargets()
     {
+        // Prioritize chasing sweater over player (if naked of course)
+        if (visibleTargets.Contains(wolf.transform) && transform.parent.GetComponent<SheepBehavior>().pathingType != SheepBehavior.SheepPathingType.ToSweater)
+        {
+            transform.parent.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.ToPlayer;
+            wolf.escaped = false;
+        }
+        else
+        {
+            wolf.escaped = true;
+        }
+
         visibleTargets.Clear();
         Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(transform.position, viewRadius, targetMask);
         foreach (Collider2D target in targetsInViewRadius)
