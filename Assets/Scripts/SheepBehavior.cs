@@ -27,6 +27,7 @@ public class SheepBehavior : MonoBehaviour
     // public data members
     [Header("Steering")]
     public float movementSpeed = 2.0f;
+    public float angularVelocity = 360;
 
     [Header("Pathing")]
     public bool pathFound;
@@ -47,6 +48,7 @@ public class SheepBehavior : MonoBehaviour
     Vector2 oldPos;
     Vector3 oldScale;
     Quaternion oldRot;
+    Transform detectionComponent;
 
     Wolf wolf;
 
@@ -66,7 +68,7 @@ public class SheepBehavior : MonoBehaviour
 
         wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
         howlTimer = 0;
-
+        detectionComponent = transform.GetChild(3);
         // AI has a patrol spot
         if (aiPatrolSpots.Length > 0)
         {
@@ -94,7 +96,7 @@ public class SheepBehavior : MonoBehaviour
                 //sheep doesn't move, keep information on its position, FoV rotation and facing direction
 
                 oldPos = GetSheepPos();
-                oldRot = transform.GetChild(3).rotation;
+                oldRot = detectionComponent.rotation;
                 oldScale = transform.localScale;
 
                 break;
@@ -104,7 +106,7 @@ public class SheepBehavior : MonoBehaviour
                 //make sure the patrol points are close to each other for more natural behaviour
 
                 oldPos = GetSheepPos();
-                oldRot = transform.GetChild(3).rotation;
+                oldRot = detectionComponent.rotation;
                 oldScale = transform.localScale;
 
                 if (!movingToNextTile && aiPatrolSpots.Length > 0)
@@ -113,7 +115,7 @@ public class SheepBehavior : MonoBehaviour
                     {
                         if (slot != null)
                         {
-                            travelPath = GeneratePath(PositionToWorldVector2Int(slot.position));
+                            travelPath = GeneratePath(slot.position);
                             if (travelPath != null)
                             {
                                 pathFound = true;
@@ -210,7 +212,7 @@ public class SheepBehavior : MonoBehaviour
                         if (oldPathingType == SheepPathingType.Stationary)
                         {
                             transform.localScale = oldScale;
-                            transform.GetChild(3).rotation = oldRot;
+                            detectionComponent.rotation = oldRot;
                         }
                     }
                     else if (!pathFound || travelPath.Count == 0)
@@ -261,7 +263,7 @@ public class SheepBehavior : MonoBehaviour
         if (movingToNextTile)
         {
             // move towards using seek or arrive
-            // Arrive();
+            Arrive();
         }
     }
 
@@ -269,7 +271,7 @@ public class SheepBehavior : MonoBehaviour
     {
         pos = GetSheepPos();
 
-        travelPath = GeneratePath(PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
+        travelPath = GeneratePath(aiPatrolSpots[patrolSpotsIndex].GetPosition);
 
         if (travelPath != null)
         {
@@ -296,12 +298,14 @@ public class SheepBehavior : MonoBehaviour
             pathFound = false;
             return;
         }
-
-        transform.position = (Vector2)transform.position + movementSpeed * direction * Time.deltaTime;
+        float angle = Mathf.Atan2(direction.y, direction.x) * 180 / Mathf.PI - 90;
+        transform.position = (Vector2)transform.position + movementSpeed * direction.normalized * Time.deltaTime;
+        detectionComponent.rotation = Quaternion.RotateTowards(detectionComponent.rotation, Quaternion.Euler(0,0,angle), angularVelocity * Time.deltaTime);
     }
 
     List<Vector2> GeneratePath(Vector2 destination)
     {
+        Debug.Log("The destination is:" + destination);
         List<Vector2> path = new List<Vector2>();
         Vector2 direction = destination - (Vector2)transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, LayerMask.NameToLayer("Obstacle"));
@@ -357,8 +361,4 @@ public class SheepBehavior : MonoBehaviour
     //Quick functions to reduce rewriting
     public Vector2Int PositionToWorldVector2Int(Vector2 position) { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(position.x, position.y, 0)); }
     Vector2Int GetSheepPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(transform.position.x, transform.position.y, 0)); }
-    bool NextPosUp() { return (pos.x == nextPos.x && pos.y + 1 == nextPos.y); }
-    bool NextPosRight() { return (pos.x + 1 == nextPos.x && pos.y == nextPos.y); }
-    bool NextPosDown() { return (pos.x == nextPos.x && pos.y - 1 == nextPos.y); }
-    bool NextPosLeft() { return (pos.x - 1 == nextPos.x && pos.y == nextPos.y); }
 }
