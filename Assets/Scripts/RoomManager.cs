@@ -40,14 +40,11 @@ public class RoomManager : MonoBehaviour
     /// </summary>
     public static PathRoom getRoomOf(Vector2Int loc)
     {
-        if (roomManager != null)
+        for (int i = 0; i < roomManager.rooms.Count; i++)
         {
-            for (int i = 0; i < roomManager.rooms.Count; i++)
+            if (roomManager.rooms[i].isInRoom(loc))
             {
-                if (roomManager.rooms[i].isInRoom(loc))
-                {
-                    return roomManager.rooms[i];
-                }
+                return roomManager.rooms[i];
             }
         }
         return null;
