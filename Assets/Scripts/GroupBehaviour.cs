@@ -22,7 +22,7 @@ public class GroupBehaviour : MonoBehaviour
     [SerializeField]
     float arrival_radius = 1.2f;
 
-
+    [HideInInspector]
     public Transform anchor;
 
     private bool isInitialized = false;
