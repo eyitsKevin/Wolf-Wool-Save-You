@@ -24,27 +24,33 @@ public class SheepBehavior : MonoBehaviour
         South,
         West
     }
-
+    // public data members
+    [Header("Steering")]
     public float movementSpeed = 2.0f;
 
-    Transform slot;
-    Vector2Int pos;
-    Vector2Int nextPos;
-    Vector2Int oldPos;
-    public Vector2Int sweaterPos;
-    Vector3 oldScale;
-    Quaternion oldRot;
+    [Header("Pathing")]
     public bool pathFound;
-    public bool movingToNextTile;
-    public bool fleeing;
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
-    public List<Vector2Int> travelPath;
+    public List<Vector2> travelPath;
+
+    [Header("Behaviours")]
+    public bool movingToNextTile;
+    public bool fleeing;
     public float howlTimer;
+    public Vector2Int sweaterPos;
+
+    // private data members
+    Transform slot;
+    Vector2Int pos;
+    Vector2 nextPos;
+    Vector2 oldPos;
+    Vector3 oldScale;
+    Quaternion oldRot;
 
     Wolf wolf;
 
-    // Patrol AI
+    // Patrol AI used for single sheep patrolling
     private int patrolSpotsIndex;
     public PatrolSpot[] aiPatrolSpots;
 
@@ -53,7 +59,7 @@ public class SheepBehavior : MonoBehaviour
     {
         pathFound = false;
         movingToNextTile = false;
-        travelPath = new List<Vector2Int>();
+        travelPath = new List<Vector2>();
         pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
@@ -107,8 +113,7 @@ public class SheepBehavior : MonoBehaviour
                     {
                         if (slot != null)
                         {
-                            pos = GetSheepPos();
-                            travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(slot.position));
+                            travelPath = GeneratePath(PositionToWorldVector2Int(slot.position));
                             if (travelPath != null)
                             {
                                 pathFound = true;
@@ -139,7 +144,7 @@ public class SheepBehavior : MonoBehaviour
                     else if (!pathFound || travelPath.Count == 0)
                     {
                         pos = GetSheepPos();
-                        travelPath = Pathing.AStar(pos, sweaterPos);
+                        travelPath = GeneratePath(sweaterPos);
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -154,7 +159,7 @@ public class SheepBehavior : MonoBehaviour
                     if (!pathFound || travelPath.Count == 0 || SameRoomAsTarget() || PlayerChangedRooms())
                     {
                         pos = GetSheepPos();
-                        travelPath = Pathing.AStar(pos, Wolf.GetWolfPos());
+                        travelPath = GeneratePath(Wolf.GetWolfPos());
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -210,7 +215,7 @@ public class SheepBehavior : MonoBehaviour
                     }
                     else if (!pathFound || travelPath.Count == 0)
                     {
-                        travelPath = Pathing.AStar(GetSheepPos(), oldPos);
+                        travelPath = GeneratePath(oldPos);
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -255,35 +260,8 @@ public class SheepBehavior : MonoBehaviour
 
         if (movingToNextTile)
         {
-            if (NextPosUp())
-            {
-                transform.Translate(new Vector3(0, movementSpeed, 0) * Time.deltaTime);
-                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0 ,0), 360 * Time.deltaTime);
-            }
-            else if (NextPosRight())
-            {
-                transform.Translate(new Vector3(movementSpeed, 0, 0) * Time.deltaTime);
-                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, -90), 360 * Time.deltaTime);
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (NextPosDown())
-            {
-                transform.Translate(new Vector3(0, -movementSpeed, 0) * Time.deltaTime);
-                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, 180), 360 * Time.deltaTime);
-            }
-            else if (NextPosLeft())
-            {
-                transform.Translate(new Vector3(-movementSpeed, 0, 0) * Time.deltaTime);
-                transform.GetChild(3).rotation = Quaternion.RotateTowards(transform.GetChild(3).rotation, Quaternion.Euler(0, 0, 90), 360 * Time.deltaTime);
-                transform.localScale = new Vector3(1, 1, 1);
-            }
-            else
-            {
-                movingToNextTile = false;
-                pathFound = false;
-                //Debug.LogError("Next tile isn't adjacent! Current: (" + pos.x + "," + pos.y + ") & Next: (" + nextPos.x + "," + nextPos.y + ")");
-            }
-            //figure out where the next tile is from current and continue in that direction
+            // move towards using seek or arrive
+            // Arrive();
         }
     }
 
@@ -291,7 +269,7 @@ public class SheepBehavior : MonoBehaviour
     {
         pos = GetSheepPos();
 
-        travelPath = Pathing.AStar(pos, this.PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
+        travelPath = GeneratePath(PositionToWorldVector2Int(aiPatrolSpots[patrolSpotsIndex].GetPosition));
 
         if (travelPath != null)
         {
@@ -305,6 +283,47 @@ public class SheepBehavior : MonoBehaviour
             }
 
         }
+    }
+
+    void Arrive()
+    {
+        Vector2 direction = nextPos - (Vector2)transform.position;
+
+
+        if(direction.magnitude < 1.8f)
+        {
+            movingToNextTile = false;
+            pathFound = false;
+            return;
+        }
+
+        transform.position = (Vector2)transform.position + movementSpeed * direction * Time.deltaTime;
+    }
+
+    List<Vector2> GeneratePath(Vector2 destination)
+    {
+        List<Vector2> path = new List<Vector2>();
+        Vector2 direction = destination - (Vector2)transform.position;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, LayerMask.NameToLayer("Obstacle"));
+        if(hit)
+        {
+            Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+
+            
+            pos = GetSheepPos();
+            List<Vector2Int> pathInt = Pathing.AStar(pos, PositionToWorldVector2Int(destination));
+            
+            foreach(Vector2Int node in pathInt)
+            {
+                path.Add(node);
+            }            
+        }
+        else
+        {
+            path.Add(destination);
+        }
+
+        return path;
     }
 
     bool SameRoomAsTarget()
