@@ -14,6 +14,9 @@ public class Wolf : MonoBehaviour
     public bool howl;
     public float howlCooldown;
 
+    Animator mAnimator;
+    bool isMoving;
+
     void Start()
     {
         if (player == null)
@@ -26,28 +29,35 @@ public class Wolf : MonoBehaviour
         howl = false;
         howlCooldown = 0;
         targetPosition = new Vector2Int(0, 0);
+        mAnimator = GetComponent<Animator>();
     }
 
     void Update()
     {
+        isMoving = false;
+
         //Basic WASD movement
         if (Input.GetAxisRaw("Horizontal") < 0)
         {
             transform.Translate(-Vector2.right * playerSpeed * Time.deltaTime);
             transform.localScale = new Vector3(-2, 2, 2);
+            isMoving = true;
         }
         if (Input.GetAxisRaw("Horizontal") > 0)
         {
             transform.Translate(Vector2.right * playerSpeed * Time.deltaTime);
             transform.localScale = new Vector3(2, 2, 2);
+            isMoving = true;
         }
         if (Input.GetAxisRaw("Vertical") < 0)
         {
             transform.Translate(-Vector2.up * playerSpeed * Time.deltaTime);
+            isMoving = true;
         }
         if (Input.GetAxisRaw("Vertical") > 0)
         {
             transform.Translate(Vector2.up * playerSpeed * Time.deltaTime);
+            isMoving = true;
         }        
         
         // Left-click to shear sheep, only succeeds when sufficiently close to it
@@ -129,6 +139,8 @@ public class Wolf : MonoBehaviour
                 }
             }
         }
+
+        mAnimator.SetBool("moving", isMoving);
     }
 
     public static Vector2Int GetWolfPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(player.transform.position.x, player.transform.position.y, 0)); }

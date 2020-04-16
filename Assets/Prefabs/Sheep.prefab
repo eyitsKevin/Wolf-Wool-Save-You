@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 869997603937407315}
   - component: {fileID: 869997603937407312}
   - component: {fileID: 2367908550536300778}
+  - component: {fileID: -512855318467050223}
   m_Layer: 0
   m_Name: Sheep
   m_TagString: Unsheared
@@ -181,15 +182,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 2
-  sweaterPos: {x: 0, y: 0}
+  angularVelocity: 360
   pathFound: 0
-  movingToNextTile: 0
-  fleeing: 0
   pathingType: 0
   oldPathingType: 0
   travelPath: []
+  movingToNextTile: 0
+  fleeing: 0
   howlTimer: 0
+  sweaterPos: {x: 0, y: 0}
   aiPatrolSpots: []
+--- !u!95 &-512855318467050223
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869997603937407311}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 063689b1b1918ea41a62c43747f1651f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &869997604526469201
 GameObject:
   m_ObjectHideFlags: 0
