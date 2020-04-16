@@ -305,7 +305,6 @@ public class SheepBehavior : MonoBehaviour
 
     List<Vector2> GeneratePath(Vector2 destination)
     {
-        Debug.Log("The destination is:" + destination);
         List<Vector2> path = new List<Vector2>();
         Vector2 direction = destination - (Vector2)transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, LayerMask.NameToLayer("Obstacle"));

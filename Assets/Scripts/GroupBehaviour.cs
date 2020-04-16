@@ -14,14 +14,17 @@ public class GroupBehaviour : MonoBehaviour
 
     [Header("Steering behaviour")]
     [SerializeField]
-    float formation_velocity = 1.8f;
+    float max_velocity = 1.8f;
     [SerializeField]
     float max_acceleration = 1f;
     [SerializeField]
     float slowdown_radius = 3f;
     [SerializeField]
     float arrival_radius = 1.2f;
-
+    [SerializeField]
+    float slowdown_velocity = 0.5f;
+    [SerializeField]
+    float formation_slowdown_range = 5f;
     [HideInInspector]
     public Transform anchor;
 
@@ -31,9 +34,11 @@ public class GroupBehaviour : MonoBehaviour
     private List<Transform> patrol_nodes = new List<Transform>();
     private int target_node_index = 0;
     private Vector2 current_velocity = Vector2.zero;
+    private float formation_velocity;
 
     void Start()
     {
+        formation_velocity = max_velocity;
         // make sure your slots and npcs match
         if (SheepGroup.Count != slots.Count)
         {
@@ -50,6 +55,7 @@ public class GroupBehaviour : MonoBehaviour
 
         // populate the patrol nodes list
         InitializePatrolNodes();
+        InvokeRepeating("CheckFormationIntegrity", 3, 5);
     }
 
     void Update()
@@ -95,6 +101,7 @@ public class GroupBehaviour : MonoBehaviour
             {
                 forward = true;
             }
+
             if (forward)
             {
                 target_node_index++;
@@ -106,6 +113,22 @@ public class GroupBehaviour : MonoBehaviour
         }
 
         transform.position = (Vector2)transform.position + velocity * Time.deltaTime;
+    }
+
+    void CheckFormationIntegrity()
+    {
+        Debug.Log("Checking if formation is A-ok");
+        // if any sheep is further than some certain range, slow down the formation so sheep can catch up
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if((SheepGroup[i].transform.position - slots[i].position).magnitude > formation_slowdown_range)
+            {
+                formation_velocity = slowdown_velocity;
+                return;
+            }
+        }
+        // otherwise make sure it stays at its max velocity
+        formation_velocity = max_velocity;
     }
 
 
