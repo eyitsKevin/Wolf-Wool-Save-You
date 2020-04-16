@@ -55,7 +55,7 @@ public class Sweater : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Cannot throw sweater beyond obstacles
-        if (collision.gameObject.layer == 8 || (collision.gameObject.layer == 11 && collision.gameObject.tag == "Wall"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
             sweaterSpeed = 0;
             this.tag = "Sweater";
