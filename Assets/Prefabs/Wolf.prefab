@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1395707215034674731}
   - component: {fileID: 1395707215034674730}
   - component: {fileID: 1737450848}
+  - component: {fileID: 4118887691508516393}
   m_Layer: 9
   m_Name: Wolf
   m_TagString: Untagged
@@ -74,8 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -7562243259222542085, guid: 11276b12dc99230458eec557019ddd5b,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4a400be512e952844b72c1102f79a9f5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -238,3 +238,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &4118887691508516393
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395707215034674735}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b6cebeb9784fc3f43aa336faac8c5bd2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
