@@ -53,7 +53,9 @@ public class FieldOfView : MonoBehaviour
         // Prioritize chasing sweater over player (if naked of course)
         if (visibleTargets.Contains(wolf.transform) && transform.parent.GetComponent<SheepBehavior>().pathingType != SheepBehavior.SheepPathingType.ToSweater)
         {
-            transform.parent.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.ToPlayer;
+            SheepBehavior aSheep = transform.parent.GetComponent<SheepBehavior>();
+            aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
+            aSheep.travelPath.Clear();
             wolf.escaped = false;
         }
         else
@@ -72,7 +74,6 @@ public class FieldOfView : MonoBehaviour
                 if(!Physics2D.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target.transform);
-                    Debug.Log("henlo");
                 }
             }
         }
@@ -109,7 +110,7 @@ public class FieldOfView : MonoBehaviour
             }
 
             oldViewCast = viewCastInfo;
-            Debug.DrawLine(transform.position, transform.position + DirFromAngle(angle, true) * viewRadius, Color.red);
+            // Debug.DrawLine(transform.position, transform.position + DirFromAngle(angle, true) * viewRadius, Color.red);
         }
 
         int vertexCount = points.Count + 1;
@@ -173,7 +174,7 @@ public class FieldOfView : MonoBehaviour
 
         if (hit)
         {
-            Debug.Log("Hit");
+            // Debug.Log("Hit");
             return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
         }
         else

@@ -143,5 +143,5 @@ public class Wolf : MonoBehaviour
         mAnimator.SetBool("moving", isMoving);
     }
 
-    public static Vector2Int GetWolfPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(player.transform.position.x, player.transform.position.y, 0)); }
+    public Vector2 GetWolfPos() { return transform.position; }
 }

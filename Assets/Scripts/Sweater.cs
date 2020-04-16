@@ -41,7 +41,8 @@ public class Sweater : MonoBehaviour
             // Move nearest sheep to this sweater
             nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
             nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
-            nearestSheepBehaviour.sweaterPos = nearestSheepBehaviour.PositionToWorldVector2Int(new Vector2(transform.position.x, transform.position.y));
+            nearestSheepBehaviour.sweaterPos = transform.position;
+            nearestSheepBehaviour.travelPath.Clear();
             
             proximity = (nearestSheep.transform.position - this.transform.position).magnitude;
 
