@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 869997603623698261}
   - component: {fileID: 869997603623698266}
-  - component: {fileID: 7681885875815753466}
-  - component: {fileID: 1166289099356766777}
   m_Layer: 0
   m_Name: Normal
   m_TagString: Untagged
@@ -83,37 +81,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &7681885875815753466
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997603623698260}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 063689b1b1918ea41a62c43747f1651f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1166289099356766777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997603623698260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &869997603937407311
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,10 +90,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 869997603937407308}
-  - component: {fileID: 869997603937407314}
   - component: {fileID: 869997603937407315}
   - component: {fileID: 869997603937407312}
   - component: {fileID: 2367908550536300778}
+  - component: {fileID: -7458977790026330516}
   m_Layer: 0
   m_Name: Sheep
   m_TagString: Unsheared
@@ -152,22 +119,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &869997603937407314
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997603937407311}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 1.34
 --- !u!50 &869997603937407315
 Rigidbody2D:
   serializedVersion: 4
@@ -224,7 +175,22 @@ MonoBehaviour:
   howlTimer: 0
   sweaterPos: {x: 0, y: 0}
   aiPatrolSpots: []
-  isMoving: 0
+--- !u!70 &-7458977790026330516
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869997603937407311}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.83, y: 2.42}
+  m_Direction: 0
 --- !u!1 &869997604526469201
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,8 +201,6 @@ GameObject:
   m_Component:
   - component: {fileID: 869997604526469206}
   - component: {fileID: 869997604526469207}
-  - component: {fileID: 5851451604750279417}
-  - component: {fileID: 1960404221404969513}
   m_Layer: 0
   m_Name: Naked
   m_TagString: Untagged
@@ -308,37 +272,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &5851451604750279417
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997604526469201}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6ca425066ad04a2448f9844171135947, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1960404221404969513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997604526469201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &869997605381944279
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,8 +282,6 @@ GameObject:
   m_Component:
   - component: {fileID: 869997605381944276}
   - component: {fileID: 869997605381944277}
-  - component: {fileID: 6417991331830110768}
-  - component: {fileID: 7656877813330432890}
   m_Layer: 0
   m_Name: Sweater
   m_TagString: Untagged
@@ -422,37 +353,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &6417991331830110768
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997605381944279}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: bb716ae511810ed49a7d07f2d366d46d, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &7656877813330432890
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997605381944279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &7492530696101699424
 PrefabInstance:
   m_ObjectHideFlags: 0
