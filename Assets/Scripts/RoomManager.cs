@@ -47,7 +47,6 @@ public class RoomManager : MonoBehaviour
                 return roomManager.rooms[i];
             }
         }
-
         return null;
     }
 
