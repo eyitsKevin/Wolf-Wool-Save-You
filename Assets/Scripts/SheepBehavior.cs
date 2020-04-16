@@ -57,7 +57,6 @@ public class SheepBehavior : MonoBehaviour
     public PatrolSpot[] aiPatrolSpots;
 
     //Animation
-    Animator mAnimator;
     public bool isMoving;
 
     // Start is called before the first frame update
@@ -89,7 +88,6 @@ public class SheepBehavior : MonoBehaviour
             }
         }
         oldPathingType = pathingType;
-        mAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -237,7 +235,6 @@ public class SheepBehavior : MonoBehaviour
 
         Move();
 
-        mAnimator.SetBool("moving", isMoving);
     }
 
     void Move()
