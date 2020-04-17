@@ -131,6 +131,8 @@ public class SheepBehavior : MonoBehaviour
 
     void Move()
     {
+        isMoving = true;
+
         // if already at spot, dont move
         if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
         {
@@ -315,7 +317,6 @@ public class SheepBehavior : MonoBehaviour
             oldPos = transform.position;
             returnedToOldPos = false;
         }
-        oldPathingType = pathingType;
     }
 
     public void IsNowFleeing()
