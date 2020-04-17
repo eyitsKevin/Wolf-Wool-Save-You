@@ -4,30 +4,26 @@ using UnityEngine;
 
 public class ControlMenu : MonoBehaviour
 {
-    public bool visible;
+    GameObject controlsMenu;
 
     void Start()
     {
-        if (GetComponent<SpriteRenderer>().enabled)
-            visible = true;
-        else
-            visible = false;
+        controlsMenu = transform.GetChild(0).gameObject;
+        controlsMenu.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("escape"))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (visible)
+            if (controlsMenu.activeInHierarchy)
             {
-                visible = false;
-                GetComponent<SpriteRenderer>().enabled = false;
+                controlsMenu.SetActive(false);
             }
             else
             {
-                visible = true;
-                GetComponent<SpriteRenderer>().enabled = true;
+                controlsMenu.SetActive(true);
             }
         }
     }
