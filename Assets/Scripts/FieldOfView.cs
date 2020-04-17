@@ -54,6 +54,7 @@ public class FieldOfView : MonoBehaviour
         if (visibleTargets.Contains(wolf.transform) && transform.parent.GetComponent<SheepBehavior>().pathingType != SheepBehavior.SheepPathingType.ToSweater)
         {
             SheepBehavior aSheep = transform.parent.GetComponent<SheepBehavior>();
+            aSheep.SetOldPos();
             aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
             aSheep.travelPath.Clear();
             wolf.escaped = false;

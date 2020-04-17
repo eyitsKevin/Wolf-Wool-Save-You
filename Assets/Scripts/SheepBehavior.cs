@@ -30,7 +30,7 @@ public class SheepBehavior : MonoBehaviour
     [Header("Steering")]
     public float movementSpeed = 2.0f;
     public float angularVelocity = 360;
-    public float arrivalDistance = 1.8f;
+    public float arrivalDistance = 0.8f;
 
     [Header("Pathing")]
     public bool pathFound;
@@ -38,6 +38,7 @@ public class SheepBehavior : MonoBehaviour
     public SheepPathingType oldPathingType;
     public List<Vector2> travelPath;
     public LayerMask obstacleMask;
+    public bool returnedToOldPos;
 
     [Header("Behaviours")]
     public bool movingToNextTile;
@@ -71,6 +72,8 @@ public class SheepBehavior : MonoBehaviour
         travelPath = new List<Vector2>();
         pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
         nextPos = transform.position;
+        oldPos = nextPos;
+        returnedToOldPos = true;
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
         
@@ -131,7 +134,7 @@ public class SheepBehavior : MonoBehaviour
         // if already at spot, dont move
         if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
         {
-            Debug.Log("Standing Still");
+            //Debug.Log("Standing Still");
             isMoving = false;
             return;
         }
@@ -139,7 +142,7 @@ public class SheepBehavior : MonoBehaviour
         // if no path, generate path
         if (travelPath.Count == 0)
         {
-            Debug.Log("Need to generate a path!");
+            //Debug.Log("Need to generate a path!");
             travelPath = GeneratePath(nextPos);
         }
 
@@ -147,7 +150,7 @@ public class SheepBehavior : MonoBehaviour
         {
             if ((travelPath[0] - (Vector2)transform.position).magnitude < arrivalDistance)
             {
-                Debug.Log("Arrived to node");
+                //Debug.Log("Arrived to node");
                 travelPath.RemoveAt(0);
             }
             Arrive();
@@ -180,6 +183,7 @@ public class SheepBehavior : MonoBehaviour
         if (((Vector2)transform.position - oldPos).magnitude < arrivalDistance)
         {
             pathingType = oldPathingType;
+            returnedToOldPos = true;
             travelPath.Clear();
             if (oldPathingType == SheepPathingType.Stationary)
             {
@@ -226,13 +230,13 @@ public class SheepBehavior : MonoBehaviour
         Vector2 direction = travelPath[0] - (Vector2)transform.position;
         
         // if obstacle, then recalculate
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, travelPath[0], direction.magnitude, obstacleMask);
+        /*RaycastHit2D hit = Physics2D.Raycast(transform.position, travelPath[0], direction.magnitude, obstacleMask);
         if (hit)
         {
             // arrive // DEBUG_OBJECT.transform.position = hit.point;
             travelPath.Clear();
             return;
-        }
+        }*/
 
         if(direction.magnitude < arrivalDistance)
         {
@@ -252,15 +256,19 @@ public class SheepBehavior : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
         if(hit)
         {
-            Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            //Debug.Log("Sheep raycasted this: " + hit.transform.tag);
 
             pos = transform.position;
             List<Vector2Int> pathInt = Pathing.AStar(PositionToWorldVector2Int(pos), PositionToWorldVector2Int(destination));
             
             foreach(Vector2Int node in pathInt)
             {
-                path.Add(node);
-            }            
+                path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
+                //Debug.Log(node.x + "," + node.y);
+            }
+            //Debug.Log(transform.position.x + "," + transform.position.y);
+
+            //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
         }
         else
         {
@@ -268,7 +276,7 @@ public class SheepBehavior : MonoBehaviour
             // DEBUG_OBJECT.transform.position = destination;
         }
 
-        Debug.Log("Generated path size is " + path.Count);
+        //Debug.Log("Generated path size is " + path.Count);
         return path;
     }
 
@@ -298,6 +306,23 @@ public class SheepBehavior : MonoBehaviour
     public void SetSlot(Transform target)
     {
         slot = target;
+    }
+
+    public void SetOldPos()
+    {
+        if (returnedToOldPos)
+        {
+            oldPos = transform.position;
+            returnedToOldPos = false;
+        }
+        oldPathingType = pathingType;
+    }
+
+    public void IsNowFleeing()
+    {
+        SetOldPos();
+        pathingType = SheepPathingType.Fleeing;
+        howlTimer = 3;
     }
 
     void OldDecisionMaking()

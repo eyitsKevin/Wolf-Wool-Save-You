@@ -40,6 +40,7 @@ public class Sweater : MonoBehaviour
 
             // Move nearest sheep to this sweater
             nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
+            nearestSheepBehaviour.SetOldPos();
             nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
             nearestSheepBehaviour.sweaterPos = transform.position;
             nearestSheepBehaviour.travelPath.Clear();

@@ -115,24 +115,21 @@ public class Wolf : MonoBehaviour
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
                     foreach (GameObject sheep in shearedSheep)
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
                     foreach (GameObject sheep in clothedSheep)
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
 
