@@ -40,8 +40,10 @@ public class Sweater : MonoBehaviour
 
             // Move nearest sheep to this sweater
             nearestSheepBehaviour = nearestSheep.GetComponent<SheepBehavior>();
+            nearestSheepBehaviour.SetOldPos();
             nearestSheepBehaviour.pathingType = SheepBehavior.SheepPathingType.ToSweater;
-            nearestSheepBehaviour.sweaterPos = nearestSheepBehaviour.PositionToWorldVector2Int(new Vector2(transform.position.x, transform.position.y));
+            nearestSheepBehaviour.sweaterPos = transform.position;
+            nearestSheepBehaviour.travelPath.Clear();
             
             proximity = (nearestSheep.transform.position - this.transform.position).magnitude;
 
@@ -55,7 +57,7 @@ public class Sweater : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Cannot throw sweater beyond obstacles
-        if (collision.gameObject.layer == 8 || (collision.gameObject.layer == 11 && collision.gameObject.tag == "Wall"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
             sweaterSpeed = 0;
             this.tag = "Sweater";

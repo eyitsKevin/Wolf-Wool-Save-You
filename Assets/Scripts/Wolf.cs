@@ -118,24 +118,21 @@ public class Wolf : MonoBehaviour
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
                     foreach (GameObject sheep in shearedSheep)
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
                     foreach (GameObject sheep in clothedSheep)
                     {
                         if ((sheep.transform.position - this.transform.position).magnitude < 10)
                         {
-                            sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Fleeing;
-                            sheep.GetComponent<SheepBehavior>().howlTimer = 3;
+                            sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                         }
                     }
 
@@ -146,5 +143,5 @@ public class Wolf : MonoBehaviour
         mAnimator.SetBool("moving", isMoving);
     }
 
-    public static Vector2Int GetWolfPos() { return (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(new Vector3(player.transform.position.x, player.transform.position.y, 0)); }
+    public Vector2 GetWolfPos() { return transform.position; }
 }
