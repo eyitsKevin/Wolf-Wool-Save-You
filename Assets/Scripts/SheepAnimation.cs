@@ -6,18 +6,28 @@ public class SheepAnimation : MonoBehaviour
 {
     Animator mAnimator;
     public bool isMoving;
+    Vector3 fovAngle;
 
-    // Start is called before the first frame update
     void Start()
     {
         mAnimator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Set facing direction based on FoV angle; default orientation is facing left
+        fovAngle = transform.parent.GetChild(3).eulerAngles;
+
+        if (fovAngle.z >= 0 && fovAngle.z <= 180)
+        {
+            transform.localScale = new Vector2(1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector2(-1, 1);
+        }
+
         isMoving = transform.parent.GetComponent<SheepBehavior>().isMoving;
         mAnimator.SetBool("moving", isMoving);
-        //Debug.Log(mAnimator.GetBool(isMoving));
     }
 }
