@@ -14,6 +14,7 @@ public class Wolf : MonoBehaviour
     public bool howl;
     public float howlCooldown;
 
+    AudioSource[] audioSources;
     Animator mAnimator;
     bool isMoving;
 
@@ -30,6 +31,7 @@ public class Wolf : MonoBehaviour
         howlCooldown = 0;
         targetPosition = new Vector2Int(0, 0);
         mAnimator = GetComponent<Animator>();
+        audioSources = GetComponents<AudioSource>();
     }
 
     void Update()
@@ -71,6 +73,7 @@ public class Wolf : MonoBehaviour
                 {
                     if ((transform.position - mouseHit.transform.position).magnitude < 3)
                     {
+                        audioSources[1].Play();
                         mouseHit.collider.tag = "Sheared";
                         woolHeld = true;
                     }
@@ -83,6 +86,7 @@ public class Wolf : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(1))
             {
+                audioSources[2].Play();
                 Instantiate(sweater, this.transform.position, Quaternion.identity);
                 targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
                 woolHeld = false;
@@ -96,8 +100,7 @@ public class Wolf : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    AudioSource howlClip = GetComponent<AudioSource>();
-                    howlClip.Play();
+                    audioSources[0].Play();
                     howlCooldown = 10;
                 }
             }
