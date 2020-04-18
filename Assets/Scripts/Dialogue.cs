@@ -40,7 +40,7 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(true);
         }
 
-        if (index < sentences.Length - 1) // Prevent wolf input during dialogue
+        if (SceneManager.GetActiveScene().name == "UpdatedMap" && index < sentences.Length - 1) // Prevent wolf input during dialogue
         {
             wolf.dialogueActive = true;
         }
@@ -72,7 +72,10 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(false);
             textPanelAnimation.SetTrigger("Close");
             textPanelAnimation.ResetTrigger("Open");
-            wolf.dialogueActive = false;
+            if (SceneManager.GetActiveScene().name == "UpdatedMap")
+            {
+                wolf.dialogueActive = false;
+            }
         }
     }
 }
