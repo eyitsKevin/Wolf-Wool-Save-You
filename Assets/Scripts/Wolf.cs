@@ -48,141 +48,142 @@ public class Wolf : MonoBehaviour
 
     void Update()
     {
-
-        if (currentHealth == 0 && SceneManager.GetActiveScene().name == "UpdatedMap")
+        if (SceneManager.GetActiveScene().name == "UpdatedMap")
         {
-            MainMenu main = new MainMenu();
-            main.LoadSceneByName("UpdatedMap");
-        } 
-
-        isMoving = false;
-
-        if (!dialogueActive) // Prevent input during dialogue
-        {        
-            //Basic WASD movement
-            if (Input.GetAxisRaw("Horizontal") < 0)
+            if (currentHealth == 0)
             {
-                transform.Translate(-Vector2.right * playerSpeed * Time.deltaTime);
-                transform.localScale = new Vector3(-2, 2, 2);
-                isMoving = true;
-            }
-            if (Input.GetAxisRaw("Horizontal") > 0)
-            {
-                transform.Translate(Vector2.right * playerSpeed * Time.deltaTime);
-                transform.localScale = new Vector3(2, 2, 2);
-                isMoving = true;
-            }
-            if (Input.GetAxisRaw("Vertical") < 0)
-            {
-                transform.Translate(-Vector2.up * playerSpeed * Time.deltaTime);
-                isMoving = true;
-            }
-            if (Input.GetAxisRaw("Vertical") > 0)
-            {
-                transform.Translate(Vector2.up * playerSpeed * Time.deltaTime);
-                isMoving = true;
+                MainMenu main = new MainMenu();
+                main.LoadSceneByName("UpdatedMap");
             }
 
-            // Left-click to shear sheep, only succeeds when sufficiently close to it
-            if (Input.GetMouseButtonDown(0) && !woolHeld)
-            {
-                RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            isMoving = false;
 
-                if (mouseHit.collider != null)
+            if (!dialogueActive) // Prevent input during dialogue
+            {
+                //Basic WASD movement
+                if (Input.GetAxisRaw("Horizontal") < 0)
                 {
-                    if (mouseHit.collider.tag == "Unsheared")
+                    transform.Translate(-Vector2.right * playerSpeed * Time.deltaTime);
+                    transform.localScale = new Vector3(-2, 2, 2);
+                    isMoving = true;
+                }
+                if (Input.GetAxisRaw("Horizontal") > 0)
+                {
+                    transform.Translate(Vector2.right * playerSpeed * Time.deltaTime);
+                    transform.localScale = new Vector3(2, 2, 2);
+                    isMoving = true;
+                }
+                if (Input.GetAxisRaw("Vertical") < 0)
+                {
+                    transform.Translate(-Vector2.up * playerSpeed * Time.deltaTime);
+                    isMoving = true;
+                }
+                if (Input.GetAxisRaw("Vertical") > 0)
+                {
+                    transform.Translate(Vector2.up * playerSpeed * Time.deltaTime);
+                    isMoving = true;
+                }
+
+                // Left-click to shear sheep, only succeeds when sufficiently close to it
+                if (Input.GetMouseButtonDown(0) && !woolHeld)
+                {
+                    RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+                    if (mouseHit.collider != null)
                     {
-                        if ((transform.position - mouseHit.transform.position).magnitude < 3)
+                        if (mouseHit.collider.tag == "Unsheared")
                         {
-                            audioSources[1].Play();
-                            mouseHit.collider.tag = "Sheared";
-                            woolHeld = true;
+                            if ((transform.position - mouseHit.transform.position).magnitude < 3)
+                            {
+                                audioSources[1].Play();
+                                mouseHit.collider.tag = "Sheared";
+                                woolHeld = true;
+                            }
                         }
                     }
                 }
-            }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
-                if (mouseHit.collider != null)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (mouseHit.collider.name == "Dungeon Chest")
+                    RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+                    if (mouseHit.collider != null)
                     {
-                        if ((transform.position - mouseHit.transform.position).magnitude < 3)
+                        if (mouseHit.collider.name == "Dungeon Chest")
                         {
-                            AudioSource[] soundEffects = GameObject.Find("SheepSoundManager").GetComponent<SoundEffectManager>().soundEffectAudioSource;
-                            soundEffects[1].Play();
+                            if ((transform.position - mouseHit.transform.position).magnitude < 3)
+                            {
+                                AudioSource[] soundEffects = GameObject.Find("SheepSoundManager").GetComponent<SoundEffectManager>().soundEffectAudioSource;
+                                soundEffects[1].Play();
+                                audioSources[0].Play();
+                                mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
+                                this.howl = true;
+                                print("VOICE ACQUIRED");
+                            }
+                        }
+                    }
+                }
+
+                // Right-click to throw sweater to the indicated position
+                if (woolHeld)
+                {
+                    if (Input.GetMouseButtonDown(1))
+                    {
+                        audioSources[2].Play();
+                        Instantiate(sweater, this.transform.position, Quaternion.identity);
+                        targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+                        woolHeld = false;
+                    }
+                }
+
+                // Press space to trigger howl if acquired and howl cooldown reaches 0
+                if (howl)
+                {
+                    if (howlCooldown <= 0)
+                    {
+                        if (Input.GetKeyDown(KeyCode.Space))
+                        {
                             audioSources[0].Play();
-                            mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
-                            this.howl = true;
-                            print("VOICE ACQUIRED");
+                            howlCooldown = 10;
                         }
                     }
-                }
-            }
-
-            // Right-click to throw sweater to the indicated position
-            if (woolHeld)
-            {
-                if (Input.GetMouseButtonDown(1))
-                {
-                    audioSources[2].Play();
-                    Instantiate(sweater, this.transform.position, Quaternion.identity);
-                    targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
-                    woolHeld = false;
-                }
-            }
-
-            // Press space to trigger howl if acquired and howl cooldown reaches 0
-            if (howl)
-            {
-                if (howlCooldown <= 0)
-                {
-                    if (Input.GetKeyDown(KeyCode.Space))
+                    else
                     {
-                        audioSources[0].Play();
-                        howlCooldown = 10;
-                    }
-                }
-                else
-                {
-                    howlCooldown -= Time.deltaTime;
+                        howlCooldown -= Time.deltaTime;
 
-                    if (howlCooldown >= 9)
-                    {
-                        GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
-                        GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
-                        GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
+                        if (howlCooldown >= 9)
+                        {
+                            GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
+                            GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
+                            GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
 
-                        foreach (GameObject sheep in unshearedSheep)
-                        {
-                            if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                            foreach (GameObject sheep in unshearedSheep)
                             {
-                                sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                                {
+                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                }
                             }
-                        }
-                        foreach (GameObject sheep in shearedSheep)
-                        {
-                            if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                            foreach (GameObject sheep in shearedSheep)
                             {
-                                sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                                {
+                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                }
                             }
-                        }
-                        foreach (GameObject sheep in clothedSheep)
-                        {
-                            if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                            foreach (GameObject sheep in clothedSheep)
                             {
-                                sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                                {
+                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                }
                             }
-                        }
 
+                        }
                     }
                 }
             }
         }
-
 
         mAnimator.SetBool("moving", isMoving);
     }

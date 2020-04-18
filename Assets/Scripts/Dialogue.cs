@@ -26,11 +26,7 @@ public class Dialogue : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(Type());
-
-        if(SceneManager.GetActiveScene().name == "UpdatedMap")
-        {
-            wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
-        }
+        wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
     }
 
     private void Update()
@@ -40,7 +36,7 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(true);
         }
 
-        if (SceneManager.GetActiveScene().name == "UpdatedMap" && index < sentences.Length - 1) // Prevent wolf input during dialogue
+        if (index < sentences.Length - 1) // Prevent wolf input during dialogue
         {
             wolf.dialogueActive = true;
         }
@@ -72,10 +68,7 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(false);
             textPanelAnimation.SetTrigger("Close");
             textPanelAnimation.ResetTrigger("Open");
-            if (SceneManager.GetActiveScene().name == "UpdatedMap")
-            {
-                wolf.dialogueActive = false;
-            }
+            wolf.dialogueActive = false;
         }
     }
 }
