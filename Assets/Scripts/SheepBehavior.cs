@@ -39,6 +39,7 @@ public class SheepBehavior : MonoBehaviour
     public List<Vector2> travelPath;
     public LayerMask obstacleMask;
     public bool returnedToOldPos;
+    public GameObject PatrolPlot;
 
     [Header("Behaviours")]
     public bool movingToNextTile;
@@ -58,8 +59,10 @@ public class SheepBehavior : MonoBehaviour
     Wolf wolf;
 
     // Patrol AI used for single sheep patrolling
-    private int patrolSpotsIndex;
-    public PatrolSpot[] aiPatrolSpots;
+    
+    private bool forward = true;
+    private List<Transform> patrol_nodes = new List<Transform>();
+    private int target_node_index = 0;
 
     //Animation
     public bool isMoving;
@@ -81,19 +84,18 @@ public class SheepBehavior : MonoBehaviour
         howlTimer = 0;
         detectionComponent = transform.GetChild(3);
         // AI has a patrol spot
-        if (aiPatrolSpots.Length > 0)
+        if (PatrolPlot != null)
         {
             pathingType = SheepPathingType.Patrolling;
-            Vector3 min = aiPatrolSpots[patrolSpotsIndex].GetPosition;
-
-            for (int i = 0; i < aiPatrolSpots.Length; i++)
+            Debug.Log("I am " + gameObject.name + " and I am initializing my patrol route");
+            foreach (Transform child in PatrolPlot.transform)
             {
-                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].GetPosition))
+                if (child.tag == "PatrolNode")
                 {
-                    min = aiPatrolSpots[i].GetPosition;
-                    patrolSpotsIndex = i;
+                    patrol_nodes.Add(child);
                 }
             }
+            target_node_index = 0;
         }
         oldPathingType = pathingType;
     }
@@ -131,6 +133,8 @@ public class SheepBehavior : MonoBehaviour
 
     void Move()
     {
+        isMoving = true;
+
         // if already at spot, dont move
         if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
         {
@@ -219,9 +223,37 @@ public class SheepBehavior : MonoBehaviour
         oldPathingType = SheepPathingType.Patrolling;
         if(slot == null)
         {
-            throw new System.Exception(gameObject.name + " sheep needs to be assigned to slot");
+            if(patrol_nodes == null || patrol_nodes.Count == 0)
+            {
+                throw new System.Exception(gameObject.name + "Sheep is set to patrol but has nothing to patrol to");
+            }
+            // when you reach a node, go to next node. If you're at the edge of a patrol path, change direction
+            if ((patrol_nodes[target_node_index].position - transform.position).magnitude <= arrivalDistance)
+            {
+                if (target_node_index == patrol_nodes.Count - 1 && forward == true)
+                {
+                    forward = false;
+                }
+                else if (target_node_index == 0 && forward == false)
+                {
+                    forward = true;
+                }
+
+                if (forward)
+                {
+                    target_node_index++;
+                }
+                else
+                {
+                    target_node_index--;
+                }
+            }
+            nextPos = patrol_nodes[target_node_index].position;
         }
-        nextPos = slot.position;
+        else
+        {
+            nextPos = slot.position;
+        }
     }
 
     void Arrive()
@@ -315,7 +347,6 @@ public class SheepBehavior : MonoBehaviour
             oldPos = transform.position;
             returnedToOldPos = false;
         }
-        oldPathingType = pathingType;
     }
 
     public void IsNowFleeing()
@@ -347,7 +378,7 @@ public class SheepBehavior : MonoBehaviour
                 oldRot = detectionComponent.rotation;
                 oldScale = transform.localScale;
 
-                if (!movingToNextTile && aiPatrolSpots.Length > 0)
+                if (!movingToNextTile && patrol_nodes.Count > 0) // if (!movingToNextTile && aiPatrolSpots.Length > 0)
                 {
                     if (!sheep.IsSheared)
                     {
