@@ -7,8 +7,10 @@ public class Music : MonoBehaviour
     Scene scene;
     public bool MainMenu;
     public bool UpdatedMap;
+    public bool Outro;
 
     static Music prefab;
+    Wolf wolf;
 
     private void Awake()
     {
@@ -24,7 +26,6 @@ public class Music : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         audioSources = GetComponents<AudioSource>();
@@ -32,7 +33,6 @@ public class Music : MonoBehaviour
         UpdatedMap = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
         scene = SceneManager.GetActiveScene();
@@ -42,14 +42,59 @@ public class Music : MonoBehaviour
             audioSources[0].Play();
             audioSources[1].Stop();
             audioSources[2].Stop();
+            audioSources[3].Stop();
             MainMenu = true;
             UpdatedMap = false;
+            Outro = false;
         }
         if (scene.name == "UpdatedMap" && !UpdatedMap)
         {
-            audioSources[0].Stop();
-            audioSources[1].Play();
+            wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
+
+            // Play alert music if wolf is caught
+            if (!wolf.escaped)
+            {
+                Debug.Log("Alert Music");
+                audioSources[0].Stop();
+                audioSources[1].Stop();
+                audioSources[2].Play();
+                audioSources[3].Stop();
+            }
+            else
+            {
+                Debug.Log("Normal Music");
+                audioSources[0].Stop();
+                audioSources[1].Play();
+                audioSources[2].Stop();
+                audioSources[3].Stop();
+            }
+
+            MainMenu = false;
             UpdatedMap = true;
+            Outro = false;
+        }
+
+        // Play alert music if wolf is caught
+        if (scene.name == "UpdatedMap" && !wolf.escaped)
+        {
+            audioSources[1].Stop();
+            audioSources[2].Play();
+        }
+        else
+        {
+            audioSources[1].Play();
+            audioSources[2].Stop();
+        }
+
+        if (scene.name == "Outro" && !Outro)
+        {
+            audioSources[0].Stop();
+            audioSources[1].Stop();
+            audioSources[2].Stop();
+            audioSources[3].Play();
+            MainMenu = false;
+            UpdatedMap = false;
+            Outro = true;
         }
 
     }
