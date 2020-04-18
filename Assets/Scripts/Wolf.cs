@@ -63,7 +63,7 @@ public class Wolf : MonoBehaviour
         }        
         
         // Left-click to shear sheep, only succeeds when sufficiently close to it
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !woolHeld)
         {
             RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 

@@ -20,11 +20,25 @@ public class SheepAnimation : MonoBehaviour
 
         if (fovAngle.z >= 0 && fovAngle.z <= 180)
         {
-            transform.localScale = new Vector2(1, 1);
+            if (transform.parent.tag == "Golden")
+            {
+                transform.localScale = new Vector2(2, 1.5f);
+            }
+            else
+            {
+                transform.localScale = new Vector2(1, 1);
+            }
         }
         else
         {
-            transform.localScale = new Vector2(-1, 1);
+            if (transform.parent.tag == "Golden")
+            {
+                transform.localScale = new Vector2(-2, 1.5f);
+            }
+            else
+            {
+                transform.localScale = new Vector2(-1, 1);
+            }
         }
 
         isMoving = transform.parent.GetComponent<SheepBehavior>().isMoving;
