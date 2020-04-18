@@ -13,10 +13,14 @@ public class Wolf : MonoBehaviour
     public bool escaped;
     public bool howl;
     public float howlCooldown;
+    public int maxHealth = 4;
+    public HealthBar healthBar;
 
     AudioSource[] audioSources;
     Animator mAnimator;
     bool isMoving;
+    bool invincible;
+    int currentHealth;
 
     void Start()
     {
@@ -32,10 +36,23 @@ public class Wolf : MonoBehaviour
         targetPosition = new Vector2Int(0, 0);
         mAnimator = GetComponent<Animator>();
         audioSources = GetComponents<AudioSource>();
+
+        if (healthBar != null)
+        {
+            healthBar.SetMaxHealth(maxHealth);
+            currentHealth = maxHealth;
+        }
     }
 
     void Update()
     {
+
+        if (currentHealth == 0)
+        {
+            MainMenu main = new MainMenu();
+            main.LoadSceneByName("UpdatedMap");
+        } 
+
         isMoving = false;
 
         //Basic WASD movement
@@ -143,5 +160,25 @@ public class Wolf : MonoBehaviour
         mAnimator.SetBool("moving", isMoving);
     }
 
+    public void TakeDamage(int damage)
+    {
+        if (!invincible)
+        {
+            currentHealth -= damage;
+            SoundEffectManager.instance.PlaySheep();
+            healthBar.SetHealth(currentHealth);
+            invincible = true;
+            
+            Invoke("SetInvinsibiltyBack", 3.0f);
+        } 
+
+    }
+
+    private void SetInvinsibiltyBack()
+    {
+        invincible = false;
+    }
+
     public Vector2 GetWolfPos() { return transform.position; }
+
 }

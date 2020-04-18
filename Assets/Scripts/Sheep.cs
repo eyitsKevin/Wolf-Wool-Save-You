@@ -46,5 +46,13 @@ public class Sheep : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name.Equals("Wolf"))
+        {
+            collision.gameObject.GetComponent<Wolf>().TakeDamage(1);
+        }
+    }
+
     public bool IsSheared { get { return sheared; } set { this.sheared = value; } }
 }

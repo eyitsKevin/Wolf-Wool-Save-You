@@ -107,6 +107,8 @@ MonoBehaviour:
   escaped: 0
   howl: 0
   howlCooldown: 0
+  maxHealth: 4
+  healthBar: {fileID: 0}
 --- !u!70 &1395707215034674731
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
