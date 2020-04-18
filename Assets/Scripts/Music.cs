@@ -7,6 +7,7 @@ public class Music : MonoBehaviour
     Scene scene;
     public bool MainMenu;
     public bool UpdatedMap;
+    public bool Alert;
     public bool Outro;
 
     static Music prefab;
@@ -31,10 +32,16 @@ public class Music : MonoBehaviour
         audioSources = GetComponents<AudioSource>();
         MainMenu = false;
         UpdatedMap = false;
+        Alert = false;
+        Outro = false;
     }
 
     void Update()
     {
+        if (GameObject.Find("Wolf"))
+        {
+            wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
+        }
         scene = SceneManager.GetActiveScene();
 
         if (scene.name == "MainMenu" && !MainMenu)
@@ -45,45 +52,31 @@ public class Music : MonoBehaviour
             audioSources[3].Stop();
             MainMenu = true;
             UpdatedMap = false;
+            Alert = false;
             Outro = false;
         }
         if (scene.name == "UpdatedMap" && !UpdatedMap)
         {
-            wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
-
-            // Play alert music if wolf is caught
-            if (!wolf.escaped)
-            {
-                Debug.Log("Alert Music");
-                audioSources[0].Stop();
-                audioSources[1].Stop();
-                audioSources[2].Play();
-                audioSources[3].Stop();
-            }
-            else
-            {
-                Debug.Log("Normal Music");
-                audioSources[0].Stop();
-                audioSources[1].Play();
-                audioSources[2].Stop();
-                audioSources[3].Stop();
-            }
-
-            MainMenu = false;
-            UpdatedMap = true;
-            Outro = false;
-        }
-
-        // Play alert music if wolf is caught
-        if (scene.name == "UpdatedMap" && !wolf.escaped)
-        {
-            audioSources[1].Stop();
-            audioSources[2].Play();
-        }
-        else
-        {
+            audioSources[0].Stop();
             audioSources[1].Play();
             audioSources[2].Stop();
+            audioSources[3].Stop();
+            MainMenu = false;
+            UpdatedMap = true;
+            Alert = false;
+            Outro = false;
+        }
+        // Change music once howl is obtained
+        if (scene.name == "UpdatedMap" && UpdatedMap && !Alert && wolf.howl)
+        {
+            audioSources[0].Stop();
+            audioSources[1].Stop();
+            audioSources[2].Play();
+            audioSources[3].Stop();
+            MainMenu = false;
+            UpdatedMap = true;
+            Alert = true;
+            Outro = false;
         }
 
         if (scene.name == "Outro" && !Outro)
@@ -94,6 +87,7 @@ public class Music : MonoBehaviour
             audioSources[3].Play();
             MainMenu = false;
             UpdatedMap = false;
+            Alert = false;
             Outro = true;
         }
 

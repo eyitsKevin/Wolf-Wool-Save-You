@@ -176,27 +176,27 @@ PrefabInstance:
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
       propertyPath: sentences.Array.data[0]
-      value: 'Blueberry: Ahem, my voice is back yay!'
+      value: 'Wolf: Ahem, I got my voice back!'
       objectReference: {fileID: 0}
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
       propertyPath: sentences.Array.data[1]
-      value: 'Wolf 1: Blueberry! How are you?'
+      value: 'Wolf 1: Wolf! You made it back!'
       objectReference: {fileID: 0}
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
       propertyPath: sentences.Array.data[2]
-      value: 'Wolf 2: You made it back?'
+      value: 'Wolf 2: We were so worried about you!'
       objectReference: {fileID: 0}
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
       propertyPath: sentences.Array.data[3]
-      value: 'Wolf 3: It''s  time to partayy'
+      value: 'Wolf 3: It''s time to party!!!'
       objectReference: {fileID: 0}
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
       propertyPath: sentences.Array.data[4]
-      value: 'Wolf 4:  WEEEEEEEEEEE'
+      value: 'Wolf 4: WEEEEEEEEEEE'
       objectReference: {fileID: 0}
     - target: {fileID: 2319693976575658775, guid: 7b7f555f0b2e63f4ebe4e4e7ffbd5d21,
         type: 3}
@@ -4610,7 +4610,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 72
-      m_TileSpriteIndex: 72
+      m_TileSpriteIndex: 87
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -9254,7 +9254,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 65
-      m_TileSpriteIndex: 65
+      m_TileSpriteIndex: 72
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -10901,7 +10901,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 63
-      m_TileSpriteIndex: 63
+      m_TileSpriteIndex: 65
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -10919,7 +10919,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 60
-      m_TileSpriteIndex: 60
+      m_TileSpriteIndex: 63
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -11297,7 +11297,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 54
-      m_TileSpriteIndex: 54
+      m_TileSpriteIndex: 60
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -12278,7 +12278,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 26
-      m_TileSpriteIndex: 50
+      m_TileSpriteIndex: 54
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -12737,7 +12737,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 24
-      m_TileSpriteIndex: 0
+      m_TileSpriteIndex: 50
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -22101,8 +22101,8 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   m_TileSpriteArray:
-  - m_RefCount: 1
-    m_Data: {fileID: 21300350, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 2
     m_Data: {fileID: 21300140, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
@@ -22202,7 +22202,7 @@ Tilemap:
   - m_RefCount: 6
     m_Data: {fileID: 21300108, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300384, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+    m_Data: {fileID: 21300350, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 2
     m_Data: {fileID: 21300162, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 2
@@ -22210,7 +22210,7 @@ Tilemap:
   - m_RefCount: 2
     m_Data: {fileID: 21300226, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300184, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+    m_Data: {fileID: 21300384, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300138, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
@@ -22222,17 +22222,17 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300146, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300174, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+    m_Data: {fileID: 21300184, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300144, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 2
     m_Data: {fileID: 21300170, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300172, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+    m_Data: {fileID: 21300174, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300142, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300368, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
+    m_Data: {fileID: 21300172, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300336, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
@@ -22246,7 +22246,7 @@ Tilemap:
   - m_RefCount: 2169
     m_Data: {fileID: 21300180, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300114, guid: 92f53c02dc6b3884385959646ff1c4af, type: 3}
+    m_Data: {fileID: 21300368, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300116, guid: 92f53c02dc6b3884385959646ff1c4af, type: 3}
   - m_RefCount: 3
@@ -22275,8 +22275,8 @@ Tilemap:
     m_Data: {fileID: 21300100, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300102, guid: 866f272de28c91d45aa970551cfa6f1f, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300114, guid: 92f53c02dc6b3884385959646ff1c4af, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 2377
     m_Data:
@@ -29978,10 +29978,10 @@ RectTransform:
   m_Father: {fileID: 1410127343}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.8205653}
-  m_AnchorMax: {x: 0.28728998, y: 1}
-  m_AnchoredPosition: {x: 5, y: -9}
-  m_SizeDelta: {x: -12, y: -16}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 160, y: -50}
+  m_SizeDelta: {x: 311, y: 98}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1926638054
 MonoBehaviour:
@@ -30001,29 +30001,37 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Game Made by:
-
+  m_text: 'Created by:
 
     Robert Laviolette
 
-
     Kevin Luu
 
-
     Patrick Pin
-
 
     Daniel
     Privorotsky
 
-
     Rezza-Zairan Zaharin
 
 
+    Music:
+
+    Hitman 2 Silent Assassin
+    - Main Theme
+
+    Fallout 1 OST - City of Lost Angels
+
+    Mozart - Requiem Dies
+    Irae
+
+    Maple Story OST - Amoria
+
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 04d92fec3ec51704e9ec548ae8ed9091, type: 2}
+  m_sharedMaterial: {fileID: 202706299011863504, guid: 04d92fec3ec51704e9ec548ae8ed9091,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -30065,7 +30073,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 34
+  m_firstOverflowCharacterIndex: 52
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -30086,13 +30094,13 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -150.04889, w: 0}
   m_textInfo:
     textComponent: {fileID: 1926638054}
-    characterCount: 100
+    characterCount: 226
     spriteCount: 0
-    spaceCount: 19
-    wordCount: 13
+    spaceCount: 39
+    wordCount: 38
     linkCount: 0
     lineCount: 12
     pageCount: 1
