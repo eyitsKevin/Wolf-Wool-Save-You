@@ -300,25 +300,28 @@ public class SheepBehavior : MonoBehaviour
             Debug.Log("Sheep raycasted this: " + hit.transform.tag);
 
             pos = transform.position;
-            List<Vector2Int> pathInt = Pathing.AStar(PositionToWorldVector2Int(pos), PositionToWorldVector2Int(destination));
-            
-            foreach(Vector2Int node in pathInt)
+            Vector2Int posV2I = PositionToWorldVector2Int(pos);
+            List<Vector2Int> pathInt = Pathing.AStar(posV2I, PositionToWorldVector2Int(destination));
+
+            Debug.Log("Current:" + posV2I.x + "," + posV2I.y);
+            int counter = 0;
+            foreach (Vector2Int node in pathInt)
             {
                 path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
-                Debug.Log(node.x + "," + node.y);
+                Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
+                counter++;
             }
-            Debug.Log(transform.position.x + "," + transform.position.y);
 
             //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
         }
         else
         {
-            Debug.Log("No raycast");
+            //Debug.Log("No raycast");
             path.Add(destination);
             // DEBUG_OBJECT.transform.position = destination;
         }
 
-        Debug.Log("Generated path size is " + path.Count);
+        //Debug.Log("Generated path size is " + path.Count);
         return path;
     }
 

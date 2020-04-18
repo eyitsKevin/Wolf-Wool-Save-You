@@ -225,9 +225,11 @@ MonoBehaviour:
   travelPath: []
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   returnedToOldPos: 0
   PatrolPlot: {fileID: 0}
+  seesPlayer: 0
+  escapeSequence: 0
   movingToNextTile: 0
   fleeing: 0
   howlTimer: 0

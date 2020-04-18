@@ -15,6 +15,11 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
         walkableTilemap.CompressBounds();
         bounds = walkableTilemap.cellBounds;
         camera = Camera.main;
