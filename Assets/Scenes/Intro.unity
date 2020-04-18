@@ -351,6 +351,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1121703921}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &323928651 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1737450849, guid: 3b1d5150e46eafd488450a950c229d4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1121703921}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &496614270
 GameObject:
   m_ObjectHideFlags: 0
@@ -28311,13 +28317,13 @@ PlayableDirector:
   - key: {fileID: -1753835417274650979, guid: 5e71b072332830b43a32e6b895d08f7c, type: 2}
     value: {fileID: 2319693976141301360}
   - key: {fileID: -4884242346741024118, guid: 5e71b072332830b43a32e6b895d08f7c, type: 2}
-    value: {fileID: 0}
+    value: {fileID: 323928651}
   - key: {fileID: 8311894708941595501, guid: 5e71b072332830b43a32e6b895d08f7c, type: 2}
     value: {fileID: 1190935767}
   - key: {fileID: 5606471602381375959, guid: 5e71b072332830b43a32e6b895d08f7c, type: 2}
     value: {fileID: 810837125}
   - key: {fileID: -9015695123814165737, guid: 5e71b072332830b43a32e6b895d08f7c, type: 2}
-    value: {fileID: 0}
+    value: {fileID: 323928651}
   m_ExposedReferences:
     m_References: []
 --- !u!1 &1895897757
