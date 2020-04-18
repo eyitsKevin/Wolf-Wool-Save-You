@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Wolf : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class Wolf : MonoBehaviour
     void Update()
     {
 
-        if (currentHealth == 0)
+        if (currentHealth == 0 && SceneManager.GetActiveScene().name == "UpdatedMap")
         {
             MainMenu main = new MainMenu();
             main.LoadSceneByName("UpdatedMap");
@@ -93,6 +94,25 @@ public class Wolf : MonoBehaviour
                         audioSources[1].Play();
                         mouseHit.collider.tag = "Sheared";
                         woolHeld = true;
+                    }
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+            if (mouseHit.collider != null)
+            {
+                if (mouseHit.collider.name == "Dungeon Chest")
+                {
+                    if ((transform.position - mouseHit.transform.position).magnitude < 3)
+                    {
+                        audioSources[1].Play();
+                        mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
+                        this.howl = true;
+                        print("VOICE ACQUIRED");
                     }
                 }
             }
@@ -159,6 +179,8 @@ public class Wolf : MonoBehaviour
 
         mAnimator.SetBool("moving", isMoving);
     }
+
+
 
     public void TakeDamage(int damage)
     {
