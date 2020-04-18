@@ -36,7 +36,7 @@ public class Sheep : MonoBehaviour
             this.transform.GetChild(2).gameObject.SetActive(true);
         }
 
-        if ((this.transform.position - wolf.transform.position).magnitude < 3 && this.tag == "Unsheared")
+        if ((this.transform.position - wolf.transform.position).magnitude < 3 && this.tag == "Unsheared" && !wolf.GetComponent<Wolf>().woolHeld)
         {
             shears.enabled = true;
         }
