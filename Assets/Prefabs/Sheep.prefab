@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 869997603623698261}
   - component: {fileID: 869997603623698266}
-  - component: {fileID: 7681885875815753466}
-  - component: {fileID: 1166289099356766777}
   m_Layer: 0
   m_Name: Normal
   m_TagString: Untagged
@@ -83,7 +81,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
-  isMoving: 0
 --- !u!1 &869997603937407311
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,9 +91,9 @@ GameObject:
   m_Component:
   - component: {fileID: 869997603937407308}
   - component: {fileID: 869997603937407315}
+  - component: {fileID: -7458977790026330516}
   - component: {fileID: 869997603937407312}
   - component: {fileID: 2367908550536300778}
-  - component: {fileID: -7458977790026330516}
   m_Layer: 0
   m_Name: Sheep
   m_TagString: Unsheared
@@ -144,6 +141,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!70 &-7458977790026330516
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869997603937407311}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.83, y: 2.42}
+  m_Direction: 0
 --- !u!114 &869997603937407312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,33 +181,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e03c0be40b40543a930f2a1dc62b27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DEBUG_OBJECT: {fileID: 0}
   movementSpeed: 2
-  angularVelocity: 360
+  angularVelocity: 100
+  arrivalDistance: 0.8
   pathFound: 0
   pathingType: 0
   oldPathingType: 0
   travelPath: []
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 256
+  returnedToOldPos: 0
+  PatrolPlot: {fileID: 0}
   movingToNextTile: 0
   fleeing: 0
   howlTimer: 0
   sweaterPos: {x: 0, y: 0}
-  aiPatrolSpots: []
---- !u!70 &-7458977790026330516
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 869997603937407311}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.83, y: 2.42}
-  m_Direction: 0
+  nextPos: {x: 0, y: 0}
+  isMoving: 0
 --- !u!1 &869997604526469201
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,7 +281,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
-  isMoving: 0
 --- !u!1 &869997605381944279
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +362,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
-  isMoving: 0
 --- !u!1 &7643966740995278813
 GameObject:
   m_ObjectHideFlags: 0
