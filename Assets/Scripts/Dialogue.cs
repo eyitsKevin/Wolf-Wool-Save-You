@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class Dialogue : MonoBehaviour
@@ -15,6 +16,8 @@ public class Dialogue : MonoBehaviour
     public Animator textPanelAnimation;
     private AudioSource audioSource;
 
+    Wolf wolf;
+
     private void Awake()
     {
         textPanelAnimation.SetTrigger("Open");
@@ -23,6 +26,11 @@ public class Dialogue : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(Type());
+
+        if(SceneManager.GetActiveScene().name == "UpdatedMap")
+        {
+            wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
+        }
     }
 
     private void Update()
@@ -30,6 +38,11 @@ public class Dialogue : MonoBehaviour
         if (textDisplay.text == sentences[index])
         {
             continueButtons.SetActive(true);
+        }
+
+        if (index < sentences.Length - 1) // Prevent wolf input during dialogue
+        {
+            wolf.dialogueActive = true;
         }
     }
     IEnumerator Type()
@@ -59,6 +72,7 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(false);
             textPanelAnimation.SetTrigger("Close");
             textPanelAnimation.ResetTrigger("Open");
+            wolf.dialogueActive = false;
         }
     }
 }
