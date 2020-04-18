@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1737450848}
   - component: {fileID: 8417721725744826710}
   - component: {fileID: 6805875636226358957}
-  - component: {fileID: 4118887691508516393}
+  - component: {fileID: 1737450849}
   m_Layer: 9
   m_Name: Wolf
   m_TagString: Untagged
@@ -53,7 +53,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 129
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
@@ -100,13 +100,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d669675f819627d4ab14d081a4d609f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 3
+  playerSpeed: 5
   sweater: {fileID: 1399191938737871619, guid: a6e84e980a43dde47b71dd1de17619e8, type: 3}
   targetPosition: {x: 0, y: 0}
   woolHeld: 0
   escaped: 0
   howl: 0
   howlCooldown: 0
+  maxHealth: 4
+  healthBar: {fileID: 0}
 --- !u!70 &1395707215034674731
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -432,7 +434,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &4118887691508516393
+--- !u!95 &1737450849
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0

@@ -40,6 +40,8 @@ public class SheepBehavior : MonoBehaviour
     public LayerMask obstacleMask;
     public bool returnedToOldPos;
     public GameObject PatrolPlot;
+    public bool seesPlayer;
+    public bool escapeSequence = false;
 
     [Header("Behaviours")]
     public bool movingToNextTile;
@@ -74,6 +76,7 @@ public class SheepBehavior : MonoBehaviour
         movingToNextTile = false;
         travelPath = new List<Vector2>();
         pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
+        oldPathingType = SheepPathingType.Stationary;
         nextPos = transform.position;
         oldPos = nextPos;
         returnedToOldPos = true;
@@ -103,6 +106,11 @@ public class SheepBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (escapeSequence)
+        {
+            pathingType = SheepPathingType.ToPlayer;
+        }
+
         // OldDecisionMaking();
         switch (pathingType)
         {
@@ -201,8 +209,9 @@ public class SheepBehavior : MonoBehaviour
     {
         nextPos = wolf.GetWolfPos();
         // Return to old position if wolf escapes sheep's FoV
-        if (wolf.escaped) 
+        if (!seesPlayer) 
         {
+            Debug.Log("Giving up");
             pathingType = SheepPathingType.Returning;
             travelPath.Clear();
         }
@@ -288,7 +297,7 @@ public class SheepBehavior : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
         if(hit)
         {
-            //Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            Debug.Log("Sheep raycasted this: " + hit.transform.tag);
 
             pos = transform.position;
             List<Vector2Int> pathInt = Pathing.AStar(PositionToWorldVector2Int(pos), PositionToWorldVector2Int(destination));
@@ -296,19 +305,20 @@ public class SheepBehavior : MonoBehaviour
             foreach(Vector2Int node in pathInt)
             {
                 path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
-                //Debug.Log(node.x + "," + node.y);
+                Debug.Log(node.x + "," + node.y);
             }
-            //Debug.Log(transform.position.x + "," + transform.position.y);
+            Debug.Log(transform.position.x + "," + transform.position.y);
 
             //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
         }
         else
         {
+            Debug.Log("No raycast");
             path.Add(destination);
             // DEBUG_OBJECT.transform.position = destination;
         }
 
-        //Debug.Log("Generated path size is " + path.Count);
+        Debug.Log("Generated path size is " + path.Count);
         return path;
     }
 
