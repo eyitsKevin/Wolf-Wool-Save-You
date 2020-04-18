@@ -10,6 +10,7 @@ TagManager:
   - Clothed
   - Wall
   - PatrolNode
+  - Golden
   layers:
   - Default
   - TransparentFX
@@ -57,5 +58,5 @@ TagManager:
     uniqueID: 66177809
     locked: 0
   - name: UI
-    uniqueID: 3276001015
+    uniqueID: 3959010241
     locked: 0
