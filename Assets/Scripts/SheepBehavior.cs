@@ -60,6 +60,9 @@ public class SheepBehavior : MonoBehaviour
 
     Wolf wolf;
 
+    //Debug stuff
+    bool isVisibleInLog = false;
+
     // Patrol AI used for single sheep patrolling
     
     private bool forward = true;
@@ -123,6 +126,7 @@ public class SheepBehavior : MonoBehaviour
                 Patrol();
                 break;
             case SheepPathingType.ToSweater:
+                isVisibleInLog = true;
                 ChaseSweater();
                 break;
             case SheepPathingType.ToPlayer:
@@ -146,7 +150,10 @@ public class SheepBehavior : MonoBehaviour
         // if already at spot, dont move
         if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
         {
-            //Debug.Log("Standing Still");
+            if (isVisibleInLog)
+            {
+                Debug.Log("Standing Still");
+            }
             isMoving = false;
             return;
         }
@@ -154,7 +161,10 @@ public class SheepBehavior : MonoBehaviour
         // if no path, generate path
         if (travelPath.Count == 0)
         {
-            //Debug.Log("Need to generate a path!");
+            if (isVisibleInLog)
+            {
+                Debug.Log("Need to generate a path!");
+            }
             travelPath = GeneratePath(nextPos);
         }
 
@@ -162,7 +172,10 @@ public class SheepBehavior : MonoBehaviour
         {
             if ((travelPath[0] - (Vector2)transform.position).magnitude < arrivalDistance)
             {
-                //Debug.Log("Arrived to node");
+                if (isVisibleInLog)
+                {
+                    Debug.Log("Arrived to node");
+                }
                 travelPath.RemoveAt(0);
             }
             Arrive();
@@ -295,24 +308,44 @@ public class SheepBehavior : MonoBehaviour
         List<Vector2> path = new List<Vector2>();
         Vector2 direction = destination - (Vector2)transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
-        if(hit)
+        if(hit && !escapeSequence) //FIXIT remove the escape sequence bit if I get that fixed
         {
-            Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            if (isVisibleInLog)
+            {
+                Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            }
 
             pos = transform.position;
             Vector2Int posV2I = PositionToWorldVector2Int(pos);
-            List<Vector2Int> pathInt = Pathing.AStar(posV2I, PositionToWorldVector2Int(destination));
+            Vector2Int desV2I = PositionToWorldVector2Int(destination);
 
-            Debug.Log("Current:" + posV2I.x + "," + posV2I.y);
-            int counter = 0;
-            foreach (Vector2Int node in pathInt)
+            Vector2Int newDestination = RoomManager.GetDestination(posV2I, desV2I);
+            direction = (Vector2)(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(newDestination.x, newDestination.y, 0)) - transform.position);
+            hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
+
+            if (hit)
             {
-                path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
-                Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
-                counter++;
-            }
+                List<Vector2Int> pathInt = Pathing.AStar(posV2I, desV2I);
 
-            //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
+                if (isVisibleInLog)
+                {
+                    Debug.Log("Current: " + posV2I.x + "," + posV2I.y);
+                }
+                int counter = 0;
+                foreach (Vector2Int node in pathInt)
+                {
+                    path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
+                    if (isVisibleInLog)
+                    {
+                        Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
+                    }
+                    counter++;
+                }
+            }
+            else
+            {
+                path.Add(destination);
+            }
         }
         else
         {
@@ -321,7 +354,10 @@ public class SheepBehavior : MonoBehaviour
             // DEBUG_OBJECT.transform.position = destination;
         }
 
-        //Debug.Log("Generated path size is " + path.Count);
+        if (isVisibleInLog)
+        {
+            Debug.Log("Generated path size is " + path.Count);
+        }
         return path;
     }
 

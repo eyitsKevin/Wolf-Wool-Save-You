@@ -35,6 +35,19 @@ public class RoomManager : MonoBehaviour
         rooms.Add(new PathRoom("down side room 4", new Vector2Int(53, -20), new Vector2Int(67, -15), new Vector2Int(57, -15)));
     }
 
+    public static Vector2Int GetDestination(Vector2Int start, Vector2Int end)
+    {
+        PathRoom roomOfStart = getRoomOf(start);
+        PathRoom roomOfEnd = getRoomOf(end);
+
+        if (roomOfStart == roomOfEnd)
+        {
+
+        }
+
+        return end;
+    }
+
     /// <summary>
     /// Returns null if the room isn't found. This means they're in the main area
     /// </summary>
