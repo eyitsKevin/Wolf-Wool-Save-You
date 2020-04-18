@@ -13,21 +13,6 @@ public class GridManager : MonoBehaviour
 
     public static GridManager instance;
 
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-
-    }
-
     private void Start()
     {
         walkableTilemap.CompressBounds();
@@ -36,7 +21,6 @@ public class GridManager : MonoBehaviour
         PopulateTile();
         //print(walkableTilemap);
     }
-
 
     private void PopulateTile()
     {

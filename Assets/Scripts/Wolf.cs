@@ -109,7 +109,9 @@ public class Wolf : MonoBehaviour
                 {
                     if ((transform.position - mouseHit.transform.position).magnitude < 3)
                     {
-                        audioSources[1].Play();
+                        AudioSource[] soundEffects = GameObject.Find("SheepSoundManager").GetComponent<SoundEffectManager>().soundEffectAudioSource;
+                        soundEffects[1].Play();
+                        audioSources[0].Play();
                         mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
                         this.howl = true;
                         print("VOICE ACQUIRED");
