@@ -67,6 +67,7 @@ public class FieldOfView : MonoBehaviour
                 aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
                 aSheep.travelPath.Clear();
                 aSheep.seesPlayer = true;
+                aSheep.giveUpTimer = SheepBehavior.GIVE_UP_TIMER_MAX;
                 //wolf.escaped = false;
             }
             else
