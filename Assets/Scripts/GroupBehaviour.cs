@@ -155,6 +155,7 @@ public class GroupBehaviour : MonoBehaviour
 
     void CheckFormationIntegrity()
     {
+        bool slowdown = false;
         Debug.Log("Checking if formation is A-ok");
         // if any sheep is further than some certain range, slow down the formation so sheep can catch up
         for (int i = 0; i < slots.Count; i++)
@@ -162,11 +163,15 @@ public class GroupBehaviour : MonoBehaviour
             if((SheepGroup[i].transform.position - slots[i].position).magnitude > formation_slowdown_range)
             {
                 formation_velocity = slowdown_velocity;
-                return;
+                SheepGroup[i].GetComponent<SheepBehavior>().travelPath.Clear();
+                slowdown = true;
             }
         }
         // otherwise make sure it stays at its max velocity
-        formation_velocity = max_velocity;
+        if (!slowdown)
+        {
+            formation_velocity = max_velocity;
+        }
     }
 
 
