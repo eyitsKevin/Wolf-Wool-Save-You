@@ -5,6 +5,14 @@ using UnityEngine;
 public class Sheep : MonoBehaviour
 {
     private bool sheared;
+    GameObject wolf;
+    SpriteRenderer shears;
+
+    void Start()
+    {
+        wolf = GameObject.Find("Wolf");
+        shears = transform.GetChild(4).GetComponent<SpriteRenderer>();
+    }
 
     void Update()
     {
@@ -26,6 +34,15 @@ public class Sheep : MonoBehaviour
             this.transform.GetChild(0).gameObject.SetActive(false);
             this.transform.GetChild(1).gameObject.SetActive(false);
             this.transform.GetChild(2).gameObject.SetActive(true);
+        }
+
+        if ((this.transform.position - wolf.transform.position).magnitude < 3 && this.tag == "Unsheared" && !wolf.GetComponent<Wolf>().woolHeld)
+        {
+            shears.enabled = true;
+        }
+        else
+        {
+            shears.enabled = false;
         }
     }
 

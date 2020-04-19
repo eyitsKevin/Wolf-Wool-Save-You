@@ -24,27 +24,33 @@ public class SheepBehavior : MonoBehaviour
         South,
         West
     }
+
+    public GameObject DEBUG_OBJECT;
     // public data members
     [Header("Steering")]
     public float movementSpeed = 2.0f;
     public float angularVelocity = 360;
+    public float arrivalDistance = 0.8f;
 
     [Header("Pathing")]
     public bool pathFound;
     public SheepPathingType pathingType;
     public SheepPathingType oldPathingType;
     public List<Vector2> travelPath;
+    public LayerMask obstacleMask;
+    public bool returnedToOldPos;
+    public GameObject PatrolPlot;
 
     [Header("Behaviours")]
     public bool movingToNextTile;
     public bool fleeing;
     public float howlTimer;
-    public Vector2Int sweaterPos;
+    public Vector2 sweaterPos;
 
     // private data members
     Transform slot;
-    Vector2Int pos;
-    Vector2 nextPos;
+    Vector2 pos;
+    public Vector2 nextPos;
     Vector2 oldPos;
     Vector3 oldScale;
     Quaternion oldRot;
@@ -53,8 +59,13 @@ public class SheepBehavior : MonoBehaviour
     Wolf wolf;
 
     // Patrol AI used for single sheep patrolling
-    private int patrolSpotsIndex;
-    public PatrolSpot[] aiPatrolSpots;
+    
+    private bool forward = true;
+    private List<Transform> patrol_nodes = new List<Transform>();
+    private int target_node_index = 0;
+
+    //Animation
+    public bool isMoving;
 
     // Start is called before the first frame update
     void Start()
@@ -63,39 +74,297 @@ public class SheepBehavior : MonoBehaviour
         movingToNextTile = false;
         travelPath = new List<Vector2>();
         pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
+        nextPos = transform.position;
+        oldPos = nextPos;
+        returnedToOldPos = true;
         sheep = GetComponent<Sheep>();
         pos = Vector2Int.RoundToInt(new Vector2(transform.position.x, transform.position.y));
-
+        
         wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
         howlTimer = 0;
         detectionComponent = transform.GetChild(3);
         // AI has a patrol spot
-        if (aiPatrolSpots.Length > 0)
+        if (PatrolPlot != null)
         {
             pathingType = SheepPathingType.Patrolling;
-            Vector3 min = aiPatrolSpots[patrolSpotsIndex].GetPosition;
-
-            for (int i = 0; i < aiPatrolSpots.Length; i++)
+            Debug.Log("I am " + gameObject.name + " and I am initializing my patrol route");
+            foreach (Transform child in PatrolPlot.transform)
             {
-                if (Vector3.Distance(transform.position, min) > Vector3.Distance(transform.position, aiPatrolSpots[i].GetPosition))
+                if (child.tag == "PatrolNode")
                 {
-                    min = aiPatrolSpots[i].GetPosition;
-                    patrolSpotsIndex = i;
+                    patrol_nodes.Add(child);
                 }
             }
+            target_node_index = 0;
         }
         oldPathingType = pathingType;
     }
 
     // Update is called once per frame
     void Update()
-    {   
+    {
+        // OldDecisionMaking();
+        switch (pathingType)
+        {
+            case SheepPathingType.Stationary:
+                oldPos = transform.position;
+                oldRot = detectionComponent.rotation;
+                oldScale = transform.localScale;
+                break;
+            case SheepPathingType.Patrolling:
+                Patrol();
+                break;
+            case SheepPathingType.ToSweater:
+                ChaseSweater();
+                break;
+            case SheepPathingType.ToPlayer:
+                ChasePlayer();
+                break;
+            case SheepPathingType.Returning:
+                ReturnToSpot();
+                break;
+            case SheepPathingType.Fleeing:
+                Flee();
+                break;
+        }
+
+        Move();
+    }
+
+    void Move()
+    {
+        isMoving = true;
+
+        // if already at spot, dont move
+        if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
+        {
+            //Debug.Log("Standing Still");
+            isMoving = false;
+            return;
+        }
+
+        // if no path, generate path
+        if (travelPath.Count == 0)
+        {
+            //Debug.Log("Need to generate a path!");
+            travelPath = GeneratePath(nextPos);
+        }
+
+        if(travelPath.Count > 0)
+        {
+            if ((travelPath[0] - (Vector2)transform.position).magnitude < arrivalDistance)
+            {
+                //Debug.Log("Arrived to node");
+                travelPath.RemoveAt(0);
+            }
+            Arrive();
+        }
+        else
+        {
+            isMoving = false;
+        }
+    }
+
+    void Flee()
+    {    
+        // only occurs if near a wolf howl
+        if (howlTimer > 0)
+        {
+            howlTimer -= Time.deltaTime;
+            nextPos = ((Vector2)transform.position - wolf.GetWolfPos()) + (Vector2)transform.position;
+        }
+        else
+        {
+            pathingType = SheepPathingType.Returning; // change to ToPlayer if flee will only be used if all sheep chase the player
+            travelPath.Clear();
+        }
+    }
+
+
+    void ReturnToSpot()
+    {
+        nextPos = oldPos;
+        if (((Vector2)transform.position - oldPos).magnitude < arrivalDistance)
+        {
+            pathingType = oldPathingType;
+            returnedToOldPos = true;
+            travelPath.Clear();
+            if (oldPathingType == SheepPathingType.Stationary)
+            {
+                transform.localScale = oldScale;
+                detectionComponent.rotation = oldRot;
+            }
+        }
+    }
+
+    void ChasePlayer()
+    {
+        nextPos = wolf.GetWolfPos();
+        // Return to old position if wolf escapes sheep's FoV
+        if (wolf.escaped) 
+        {
+            pathingType = SheepPathingType.Returning;
+            travelPath.Clear();
+        }
+    }
+
+    void ChaseSweater()
+    {
+        if (this.tag == "Clothed")
+        {
+            pathingType = SheepPathingType.Returning;
+            return;
+        }
+        nextPos = sweaterPos;
+    }
+
+    private void Patrol()
+    {
+        oldPathingType = SheepPathingType.Patrolling;
+        if(slot == null)
+        {
+            if(patrol_nodes == null || patrol_nodes.Count == 0)
+            {
+                throw new System.Exception(gameObject.name + "Sheep is set to patrol but has nothing to patrol to");
+            }
+            // when you reach a node, go to next node. If you're at the edge of a patrol path, change direction
+            if ((patrol_nodes[target_node_index].position - transform.position).magnitude <= arrivalDistance)
+            {
+                if (target_node_index == patrol_nodes.Count - 1 && forward == true)
+                {
+                    forward = false;
+                }
+                else if (target_node_index == 0 && forward == false)
+                {
+                    forward = true;
+                }
+
+                if (forward)
+                {
+                    target_node_index++;
+                }
+                else
+                {
+                    target_node_index--;
+                }
+            }
+            nextPos = patrol_nodes[target_node_index].position;
+        }
+        else
+        {
+            nextPos = slot.position;
+        }
+    }
+
+    void Arrive()
+    {
+        if(travelPath.Count == 0) { return; }
+        Vector2 direction = travelPath[0] - (Vector2)transform.position;
+        
+        // if obstacle, then recalculate
+        /*RaycastHit2D hit = Physics2D.Raycast(transform.position, travelPath[0], direction.magnitude, obstacleMask);
+        if (hit)
+        {
+            // arrive // DEBUG_OBJECT.transform.position = hit.point;
+            travelPath.Clear();
+            return;
+        }*/
+
+        if(direction.magnitude < arrivalDistance)
+        {
+            isMoving = false;
+            return;
+        }
+        isMoving = true;
+        float angle = Mathf.Atan2(direction.y, direction.x) * 180 / Mathf.PI - 90;
+        transform.position = (Vector2)transform.position + movementSpeed * direction.normalized * Time.deltaTime;
+        detectionComponent.rotation = Quaternion.RotateTowards(detectionComponent.rotation, Quaternion.Euler(0,0,angle), angularVelocity * Time.deltaTime);
+    }
+
+    List<Vector2> GeneratePath(Vector2 destination)
+    {
+        List<Vector2> path = new List<Vector2>();
+        Vector2 direction = destination - (Vector2)transform.position;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
+        if(hit)
+        {
+            //Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+
+            pos = transform.position;
+            List<Vector2Int> pathInt = Pathing.AStar(PositionToWorldVector2Int(pos), PositionToWorldVector2Int(destination));
+            
+            foreach(Vector2Int node in pathInt)
+            {
+                path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
+                //Debug.Log(node.x + "," + node.y);
+            }
+            //Debug.Log(transform.position.x + "," + transform.position.y);
+
+            //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
+        }
+        else
+        {
+            path.Add(destination);
+            // DEBUG_OBJECT.transform.position = destination;
+        }
+
+        //Debug.Log("Generated path size is " + path.Count);
+        return path;
+    }
+
+    bool SameRoomAsTarget()
+    {
+        //FIXIT actually do checking, once rooms are coded in
+        switch (pathingType)
+        {
+            case SheepPathingType.Patrolling:
+                break;
+            case SheepPathingType.ToSweater:
+                break;
+            case SheepPathingType.ToPlayer:
+                break;
+        }
+
+        return false;
+    }
+
+    bool PlayerChangedRooms()
+    {
+        //FIXIT actually do checking, once rooms are coded in
+        return false;
+    }
+
+    // Group formation sets target slot for each sheep
+    public void SetSlot(Transform target)
+    {
+        slot = target;
+    }
+
+    public void SetOldPos()
+    {
+        if (returnedToOldPos)
+        {
+            oldPos = transform.position;
+            returnedToOldPos = false;
+        }
+    }
+
+    public void IsNowFleeing()
+    {
+        SetOldPos();
+        pathingType = SheepPathingType.Fleeing;
+        howlTimer = 3;
+    }
+
+    void OldDecisionMaking()
+    {
+
         switch (pathingType)
         {
             case SheepPathingType.Stationary:
                 //sheep doesn't move, keep information on its position, FoV rotation and facing direction
 
-                oldPos = GetSheepPos();
+                oldPos = transform.position;
                 oldRot = detectionComponent.rotation;
                 oldScale = transform.localScale;
 
@@ -105,11 +374,11 @@ public class SheepBehavior : MonoBehaviour
                 //move along designated path, keep information on its current position, FoV rotation and facing direction
                 //make sure the patrol points are close to each other for more natural behaviour
 
-                oldPos = GetSheepPos();
+                oldPos = transform.position;
                 oldRot = detectionComponent.rotation;
                 oldScale = transform.localScale;
 
-                if (!movingToNextTile && aiPatrolSpots.Length > 0)
+                if (!movingToNextTile && patrol_nodes.Count > 0) // if (!movingToNextTile && aiPatrolSpots.Length > 0)
                 {
                     if (!sheep.IsSheared)
                     {
@@ -120,7 +389,7 @@ public class SheepBehavior : MonoBehaviour
                             {
                                 pathFound = true;
                                 float dist = Vector3.Distance(transform.position, slot.position);
-                                if (dist < 1.8f)
+                                if (dist < arrivalDistance)
                                 {
                                     pathFound = false;
                                     travelPath = null;
@@ -145,7 +414,6 @@ public class SheepBehavior : MonoBehaviour
                     }
                     else if (!pathFound || travelPath.Count == 0)
                     {
-                        pos = GetSheepPos();
                         travelPath = GeneratePath(sweaterPos);
                         if (travelPath != null)
                         {
@@ -153,15 +421,14 @@ public class SheepBehavior : MonoBehaviour
                         }
                     }
                 }
-                break; 
+                break;
 
             case SheepPathingType.ToPlayer:
                 if (!movingToNextTile)
                 {
                     if (!pathFound || travelPath.Count == 0 || SameRoomAsTarget() || PlayerChangedRooms())
                     {
-                        pos = GetSheepPos();
-                        travelPath = GeneratePath(Wolf.GetWolfPos());
+                        travelPath = GeneratePath(wolf.GetWolfPos());
                         if (travelPath != null)
                         {
                             pathFound = true;
@@ -220,141 +487,18 @@ public class SheepBehavior : MonoBehaviour
                         travelPath = GeneratePath(oldPos);
                         if (travelPath != null)
                         {
+
                             pathFound = true;
-                            movingToNextTile = true;
+                            // movingToNextTile = true;
                         }
                     }
                 }
                 break;
         }
 
+        isMoving = false;
+
         Move();
-    }
-
-    void Move()
-    {
-        if (movingToNextTile)
-        {
-            Vector2Int checkPos = GetSheepPos();
-            if (checkPos != pos)
-            {
-                movingToNextTile = false;
-                pos = checkPos;
-            }
-        }
-
-        if (!movingToNextTile && pathFound)
-        {
-            if (pathingType == SheepPathingType.Stationary) return;
-
-            if (travelPath.Count > 0)
-            {
-                nextPos = travelPath[0];
-                travelPath.RemoveAt(0);
-                movingToNextTile = true;
-            }
-            else
-            {
-                movingToNextTile = false;
-                pathFound = false;
-            }
-        }
-
-        if (movingToNextTile)
-        {
-            // move towards using seek or arrive
-            Arrive();
-        }
-    }
-
-    private void Patrol()
-    {
-        pos = GetSheepPos();
-
-        travelPath = GeneratePath(aiPatrolSpots[patrolSpotsIndex].GetPosition);
-
-        if (travelPath != null)
-        {
-            pathFound = true;
-            float dist = Vector3.Distance(transform.position, aiPatrolSpots[patrolSpotsIndex].GetPosition);
-            if (dist < 1.8f)
-            {
-                pathFound = false;
-                travelPath = null;
-                patrolSpotsIndex = (patrolSpotsIndex + 1) % aiPatrolSpots.Length;
-            }
-
-        }
-    }
-
-    void Arrive()
-    {
-        Vector2 direction = nextPos - (Vector2)transform.position;
-
-
-        if(direction.magnitude < 1.8f)
-        {
-            movingToNextTile = false;
-            pathFound = false;
-            return;
-        }
-        float angle = Mathf.Atan2(direction.y, direction.x) * 180 / Mathf.PI - 90;
-        transform.position = (Vector2)transform.position + movementSpeed * direction.normalized * Time.deltaTime;
-        detectionComponent.rotation = Quaternion.RotateTowards(detectionComponent.rotation, Quaternion.Euler(0,0,angle), angularVelocity * Time.deltaTime);
-    }
-
-    List<Vector2> GeneratePath(Vector2 destination)
-    {
-        List<Vector2> path = new List<Vector2>();
-        Vector2 direction = destination - (Vector2)transform.position;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, LayerMask.NameToLayer("Obstacle"));
-        if(hit)
-        {
-            Debug.Log("Sheep raycasted this: " + hit.transform.tag);
-
-            
-            pos = GetSheepPos();
-            List<Vector2Int> pathInt = Pathing.AStar(pos, PositionToWorldVector2Int(destination));
-            
-            foreach(Vector2Int node in pathInt)
-            {
-                path.Add(node);
-            }            
-        }
-        else
-        {
-            path.Add(destination);
-        }
-
-        return path;
-    }
-
-    bool SameRoomAsTarget()
-    {
-        //FIXIT actually do checking, once rooms are coded in
-        switch (pathingType)
-        {
-            case SheepPathingType.Patrolling:
-                break;
-            case SheepPathingType.ToSweater:
-                break;
-            case SheepPathingType.ToPlayer:
-                break;
-        }
-
-        return false;
-    }
-
-    bool PlayerChangedRooms()
-    {
-        //FIXIT actually do checking, once rooms are coded in
-        return false;
-    }
-
-    // Group formation sets target slot for each sheep
-    public void SetSlot(Transform target)
-    {
-        slot = target;
     }
 
     //Quick functions to reduce rewriting

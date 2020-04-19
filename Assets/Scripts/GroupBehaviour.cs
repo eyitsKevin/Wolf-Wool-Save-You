@@ -139,6 +139,13 @@ public class GroupBehaviour : MonoBehaviour
         {
             throw new System.Exception("No patrol plot exists for this group! " + gameObject.GetInstanceID());
         }
+        else
+        {
+            foreach(var sheep in SheepGroup)
+            {
+                sheep.GetComponent<SheepBehavior>().pathingType = SheepBehavior.SheepPathingType.Patrolling;
+            }
+        }
 
         foreach (Transform child in PatrolPlot.transform)
         {
