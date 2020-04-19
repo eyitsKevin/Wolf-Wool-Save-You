@@ -66,6 +66,7 @@ public class SheepBehavior : MonoBehaviour
     Transform detectionComponent;
     public float current_velocity;
 
+    
 
     Wolf wolf;
 
@@ -120,6 +121,13 @@ public class SheepBehavior : MonoBehaviour
             movementSpeed *= 1.5f;
             current_velocity = movementSpeed;
         }
+
+        InvokeRepeating("clearPath", 10.0f, 1.0f);
+    }
+
+    private void clearPath()
+    {
+        travelPath.Clear();
     }
 
     // Update is called once per frame
