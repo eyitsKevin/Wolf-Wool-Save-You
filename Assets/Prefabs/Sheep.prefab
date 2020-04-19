@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 869997603623698261}
   - component: {fileID: 869997603623698266}
-  - component: {fileID: 7681885875815753466}
-  - component: {fileID: 1166289099356766777}
+  - component: {fileID: 6990770294342184693}
+  - component: {fileID: 867778221274922238}
   m_Layer: 0
   m_Name: Normal
   m_TagString: Untagged
@@ -114,6 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
 --- !u!1 &869997603937407311
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,14 +225,16 @@ MonoBehaviour:
   travelPath: []
   obstacleMask:
     serializedVersion: 2
+    m_Bits: 256
   returnedToOldPos: 0
   PatrolPlot: {fileID: 0}
+  seesPlayer: 0
+  escapeSequence: 0
   movingToNextTile: 0
   fleeing: 0
   howlTimer: 0
   sweaterPos: {x: 0, y: 0}
   nextPos: {x: 0, y: 0}
-  isMoving: 0
   isMoving: 0
 --- !u!1 &869997604526469201
 GameObject:
@@ -347,6 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
 --- !u!1 &869997605381944279
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,6 +465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3e21560190db043abb0b6549d3daee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
 --- !u!1 &7643966740995278813
 GameObject:
   m_ObjectHideFlags: 0

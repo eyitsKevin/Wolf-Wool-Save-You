@@ -25,6 +25,8 @@ public class SheepBehavior : MonoBehaviour
         West
     }
 
+    public const float GIVE_UP_TIMER_MAX = 5;
+
     public GameObject DEBUG_OBJECT;
     // public data members
     [Header("Steering")]
@@ -40,6 +42,10 @@ public class SheepBehavior : MonoBehaviour
     public LayerMask obstacleMask;
     public bool returnedToOldPos;
     public GameObject PatrolPlot;
+    public bool seesPlayer;
+    public bool escapeSequence = false;
+    public bool lastChaseBegun = false;
+    public float giveUpTimer;
 
     [Header("Behaviours")]
     public bool movingToNextTile;
@@ -58,6 +64,9 @@ public class SheepBehavior : MonoBehaviour
 
     Wolf wolf;
 
+    //Debug stuff
+    bool isVisibleInLog = false;
+
     // Patrol AI used for single sheep patrolling
     
     private bool forward = true;
@@ -74,6 +83,7 @@ public class SheepBehavior : MonoBehaviour
         movingToNextTile = false;
         travelPath = new List<Vector2>();
         pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
+        oldPathingType = SheepPathingType.Stationary;
         nextPos = transform.position;
         oldPos = nextPos;
         returnedToOldPos = true;
@@ -103,6 +113,12 @@ public class SheepBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (escapeSequence && PositionToWorldVector2Int((Vector2)transform.position).x >= RoomManager.MAINAREA_INNER_X)
+        {
+            SetOldPos();
+            pathingType = SheepPathingType.ToPlayer;
+        }
+
         // OldDecisionMaking();
         switch (pathingType)
         {
@@ -115,6 +131,7 @@ public class SheepBehavior : MonoBehaviour
                 Patrol();
                 break;
             case SheepPathingType.ToSweater:
+                isVisibleInLog = true;
                 ChaseSweater();
                 break;
             case SheepPathingType.ToPlayer:
@@ -138,7 +155,10 @@ public class SheepBehavior : MonoBehaviour
         // if already at spot, dont move
         if ((nextPos - (Vector2)transform.position).magnitude < arrivalDistance)
         {
-            //Debug.Log("Standing Still");
+            if (isVisibleInLog)
+            {
+                Debug.Log("Standing Still");
+            }
             isMoving = false;
             return;
         }
@@ -146,7 +166,10 @@ public class SheepBehavior : MonoBehaviour
         // if no path, generate path
         if (travelPath.Count == 0)
         {
-            //Debug.Log("Need to generate a path!");
+            if (isVisibleInLog)
+            {
+                Debug.Log("Need to generate a path!");
+            }
             travelPath = GeneratePath(nextPos);
         }
 
@@ -154,7 +177,10 @@ public class SheepBehavior : MonoBehaviour
         {
             if ((travelPath[0] - (Vector2)transform.position).magnitude < arrivalDistance)
             {
-                //Debug.Log("Arrived to node");
+                if (isVisibleInLog)
+                {
+                    Debug.Log("Arrived to node");
+                }
                 travelPath.RemoveAt(0);
             }
             Arrive();
@@ -201,9 +227,23 @@ public class SheepBehavior : MonoBehaviour
     {
         nextPos = wolf.GetWolfPos();
         // Return to old position if wolf escapes sheep's FoV
-        if (wolf.escaped) 
+        if (!seesPlayer && !escapeSequence) 
         {
-            pathingType = SheepPathingType.Returning;
+            if (giveUpTimer <= 0)
+            {
+                Debug.Log("Giving up");
+                pathingType = SheepPathingType.Returning;
+                travelPath.Clear();
+            }
+            else
+            {
+                Debug.Log(giveUpTimer);
+                giveUpTimer -= 1.0f * Time.deltaTime;
+                travelPath.Clear();
+            }
+        }
+        else if (!seesPlayer && escapeSequence)
+        {
             travelPath.Clear();
         }
     }
@@ -286,29 +326,95 @@ public class SheepBehavior : MonoBehaviour
         List<Vector2> path = new List<Vector2>();
         Vector2 direction = destination - (Vector2)transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, direction.magnitude, obstacleMask);
-        if(hit)
+        if(hit && !escapeSequence)
         {
-            //Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            if (isVisibleInLog)
+            {
+                Debug.Log("Sheep raycasted this: " + hit.transform.tag);
+            }
 
             pos = transform.position;
-            List<Vector2Int> pathInt = Pathing.AStar(PositionToWorldVector2Int(pos), PositionToWorldVector2Int(destination));
-            
-            foreach(Vector2Int node in pathInt)
+            Vector2Int posV2I = PositionToWorldVector2Int(pos);
+            List<Vector2Int> pathInt = Pathing.AStar(posV2I, PositionToWorldVector2Int(destination));
+
+            if (isVisibleInLog)
+            {
+                Debug.Log("Current: " + posV2I.x + "," + posV2I.y);
+            }
+            int counter = 0;
+            foreach (Vector2Int node in pathInt)
             {
                 path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
-                //Debug.Log(node.x + "," + node.y);
+                if (isVisibleInLog)
+                {
+                    Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
+                }
+                counter++;
             }
-            //Debug.Log(transform.position.x + "," + transform.position.y);
 
             //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
         }
+        else if (hit && escapeSequence)
+        {
+            pos = transform.position;
+            Vector2Int posV2I = PositionToWorldVector2Int(pos);
+            Vector2Int desV2I = PositionToWorldVector2Int(destination);
+
+            if (desV2I.y > RoomManager.EXIT_Y && posV2I.y > RoomManager.FINAL_ROOM_STAY_Y)
+            {
+                path.Add(destination);
+                /*if (RoomManager.InExitRoom(desV2I))
+                {
+                    path.Add((Vector2)(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(RoomManager.roomManager.voiceRoom.getExit().x,
+                        RoomManager.roomManager.voiceRoom.getExit().y, 0)) - transform.position));
+                }
+                else
+                {
+                    path.Add(destination);
+                }*/
+            }
+            else if (desV2I.y > RoomManager.FINAL_ROOM_START_Y && posV2I.y <= RoomManager.FINAL_ROOM_STAY_Y && !lastChaseBegun)
+            {
+                path.Clear();
+            }
+            else
+            {
+                if (posV2I.y > RoomManager.EXIT_Y)
+                {
+                    if (posV2I.x < RoomManager.EXIT_LEFTX)
+                    {
+                        path.Add((Vector2)(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(RoomManager.EXIT_LEFTX, RoomManager.EXIT_Y - 1, 0)) - transform.position));
+                    }
+                    else if (posV2I.x > RoomManager.EXIT_RIGHTX)
+                    {
+                        path.Add((Vector2)(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(RoomManager.EXIT_RIGHTX, RoomManager.EXIT_Y - 1, 0)) - transform.position));
+                    }
+                    else
+                    {
+                        path.Add((Vector2)(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(RoomManager.MAINAREA_OUTER_X, RoomManager.MAINAREA_LOWERTUNNEL_UPPERY, 0)) - transform.position));
+                    }
+                }
+                else
+                {
+                    if (desV2I.y <= RoomManager.FINAL_ROOM_START_Y)
+                    {
+                        lastChaseBegun = true;
+                    }
+                    path.Add(destination);
+                }
+            }
+        }
         else
         {
+            //Debug.Log("No raycast");
             path.Add(destination);
             // DEBUG_OBJECT.transform.position = destination;
         }
 
-        //Debug.Log("Generated path size is " + path.Count);
+        if (isVisibleInLog)
+        {
+            Debug.Log("Generated path size is " + path.Count);
+        }
         return path;
     }
 

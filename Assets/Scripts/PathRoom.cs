@@ -7,19 +7,22 @@ public class PathRoom
     private Vector2Int corner1;
     private Vector2Int corner2;
     private Vector2Int exit;
+    private Vector2Int entrance;
     private string name;
 
-    public PathRoom(string roomName, Vector2Int cornerA, Vector2Int cornerB, Vector2Int exitLoc)
+    public PathRoom(string roomName, Vector2Int cornerA, Vector2Int cornerB, Vector2Int exitLoc, Vector2Int entranceLoc)
     {
         name = roomName;
         corner1 = cornerA;
         corner2 = cornerB;
         exit = exitLoc;
+        entrance = entranceLoc;
     }
 
     public Vector2Int getCorner1() { return corner1; }
     public Vector2Int getCorner2() { return corner2; }
     public Vector2Int getExit() { return exit; }
+    public Vector2Int getEntrance() { return entrance; }
     public string getName() { return name; }
 
     public bool isInRoom(Vector2Int loc)

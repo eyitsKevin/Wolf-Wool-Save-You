@@ -70,7 +70,7 @@ public class GroupBehaviour : MonoBehaviour
     {
         // this is steering with acceleration
 
-        Debug.Log(patrol_nodes);
+        //Debug.Log(patrol_nodes);
 
          Vector2 direction = patrol_nodes[target_node_index].position - transform.position;
         // Vector2 acceleration = max_acceleration * direction.normalized;

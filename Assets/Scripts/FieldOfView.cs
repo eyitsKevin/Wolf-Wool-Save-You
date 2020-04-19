@@ -50,31 +50,44 @@ public class FieldOfView : MonoBehaviour
 
     void FindVisibleTargets()
     {
-        // Prioritize chasing sweater over player (if naked of course)
-        if (visibleTargets.Contains(wolf.transform) && transform.parent.GetComponent<SheepBehavior>().pathingType != SheepBehavior.SheepPathingType.ToSweater)
+        SheepBehavior aSheep = transform.parent.GetComponent<SheepBehavior>();
+        if (wolf.howl)
         {
-            SheepBehavior aSheep = transform.parent.GetComponent<SheepBehavior>();
-            aSheep.SetOldPos();
-            aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
-            aSheep.travelPath.Clear();
-            wolf.escaped = false;
-        }
-        else
-        {
-            wolf.escaped = true;
+            aSheep.escapeSequence = true;
         }
 
-        visibleTargets.Clear();
-        Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(transform.position, viewRadius, targetMask);
-        foreach (Collider2D target in targetsInViewRadius)
+        //Prioritize escape sequence above all
+        if (!aSheep.escapeSequence)
         {
-            Vector2 dirToTarget = (target.transform.position - transform.position).normalized;
-            if(Vector2.Angle(transform.up, dirToTarget) < viewAngle / 2)
+            // Prioritize chasing sweater over player (if naked of course)
+            if (visibleTargets.Contains(wolf.transform) && aSheep.pathingType != SheepBehavior.SheepPathingType.ToSweater)
             {
-                float distToTarget = Vector3.Distance(transform.position, target.transform.position);
-                if(!Physics2D.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
+                Debug.Log("Wolf found!");
+                aSheep.SetOldPos();
+                aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
+                aSheep.travelPath.Clear();
+                aSheep.seesPlayer = true;
+                aSheep.giveUpTimer = SheepBehavior.GIVE_UP_TIMER_MAX;
+                //wolf.escaped = false;
+            }
+            else
+            {
+                aSheep.seesPlayer = false;
+                //wolf.escaped = true;
+            }
+
+            visibleTargets.Clear();
+            Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(transform.position, viewRadius, targetMask);
+            foreach (Collider2D target in targetsInViewRadius)
+            {
+                Vector2 dirToTarget = (target.transform.position - transform.position).normalized;
+                if (Vector2.Angle(transform.up, dirToTarget) < viewAngle / 2)
                 {
-                    visibleTargets.Add(target.transform);
+                    float distToTarget = Vector3.Distance(transform.position, target.transform.position);
+                    if (!Physics2D.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
+                    {
+                        visibleTargets.Add(target.transform);
+                    }
                 }
             }
         }

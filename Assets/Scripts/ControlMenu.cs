@@ -20,10 +20,12 @@ public class ControlMenu : MonoBehaviour
             if (controlsMenu.activeInHierarchy)
             {
                 controlsMenu.SetActive(false);
+                Time.timeScale = 1;
             }
             else
             {
                 controlsMenu.SetActive(true);
+                Time.timeScale = 0;
             }
         }
     }
