@@ -177,6 +177,12 @@ public class Pathing
 
     static public List<Vector2Int> AStar_SameRoom(Vector2Int start, Vector2Int finish)
     {
+        if (!GridManager.Instance.isWalkableTile(finish))
+        {
+            Debug.LogError("End is unreachable");
+            return null;
+        }
+
         open.Clear();
         closed.Clear();
         List<Vector2Int> path = new List<Vector2Int>();
@@ -186,14 +192,17 @@ public class Pathing
 
         PathTileNode currentNode = open[0];
 
+        int giveUpCounter = 0;
+
         bool endFound = false;
-        while (open.Count > 0 && !endFound)
+        while (open.Count > 0 && !endFound && giveUpCounter < 1000)
         {
             //Debug.Log("Checking node: " + currentNode.pos.x + "," + currentNode.pos.y);
             currentNode = open[0];
             open.RemoveAt(0);
             closed.Add(currentNode);
             endFound = addNeighbors(currentNode, finish);
+            giveUpCounter++;
         }
 
         if (!endFound)

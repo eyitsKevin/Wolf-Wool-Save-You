@@ -26,6 +26,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     public const float GIVE_UP_TIMER_MAX = 5;
+    public const float GIVE_UP_TIMER_MAX_G = 15;
     public const float HOWL_DURATION = 5;
 
     public GameObject DEBUG_OBJECT;
@@ -110,6 +111,11 @@ public class SheepBehavior : MonoBehaviour
             target_node_index = 0;
         }
         oldPathingType = pathingType;
+
+        if (goldenSheep)
+        {
+            movementSpeed *= 1.5f;
+        }
     }
 
     // Update is called once per frame
@@ -338,20 +344,26 @@ public class SheepBehavior : MonoBehaviour
             pos = transform.position;
             Vector2Int posV2I = PositionToWorldVector2Int(pos);
             List<Vector2Int> pathInt = Pathing.AStar(posV2I, PositionToWorldVector2Int(destination));
-
-            if (isVisibleInLog)
+            if (pathInt == null)
             {
-                Debug.Log("Current: " + posV2I.x + "," + posV2I.y);
+                path.Add(destination);
             }
-            int counter = 0;
-            foreach (Vector2Int node in pathInt)
+            else
             {
-                path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
                 if (isVisibleInLog)
                 {
-                    Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
+                    Debug.Log("Current: " + posV2I.x + "," + posV2I.y);
                 }
-                counter++;
+                int counter = 0;
+                foreach (Vector2Int node in pathInt)
+                {
+                    path.Add(GridManager.Instance.walkableTilemap.CellToWorld(new Vector3Int(node.x, node.y, 0)));
+                    if (isVisibleInLog)
+                    {
+                        Debug.Log("Path[ " + counter + "]: " + node.x + "," + node.y);
+                    }
+                    counter++;
+                }
             }
 
             //FIXIT go through the list of nodes in path and see if we can skip any (if you can raycast to 3 without a hit, you don't need to include 0, 1, or 2)
