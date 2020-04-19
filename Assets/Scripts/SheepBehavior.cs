@@ -118,6 +118,7 @@ public class SheepBehavior : MonoBehaviour
         if (goldenSheep)
         {
             movementSpeed *= 1.5f;
+            current_velocity = movementSpeed;
         }
     }
 
@@ -206,14 +207,20 @@ public class SheepBehavior : MonoBehaviour
         // only occurs if near a wolf howl
         if (howlTimer > 0)
         {
-            Debug.Log("Howl!!");
             howlTimer -= Time.deltaTime;
-            nextPos = ((Vector2)transform.position - wolf.GetWolfPos()) + (Vector2)transform.position;
+            if (!goldenSheep)
+            {
+                nextPos = ((Vector2)transform.position - wolf.GetWolfPos()) + (Vector2)transform.position;
+            }
+            else
+            {
+                nextPos = wolf.GetWolfPos();
+            }
         }
         else
         {
             current_velocity = movementSpeed;
-            pathingType = SheepPathingType.Returning; // change to ToPlayer if flee will only be used if all sheep chase the player
+            pathingType = SheepPathingType.ToPlayer;
             travelPath.Clear();
         }
     }
@@ -481,6 +488,12 @@ public class SheepBehavior : MonoBehaviour
             pathingType = SheepPathingType.Fleeing;
             travelPath.Clear();
             current_velocity = movementSpeed * 2;
+            howlTimer = HOWL_DURATION;
+        }
+        else
+        {
+            pathingType = SheepPathingType.Fleeing;
+            current_velocity = movementSpeed * 0.7f;
             howlTimer = HOWL_DURATION;
         }
     }

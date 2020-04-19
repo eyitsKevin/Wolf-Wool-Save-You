@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -172,29 +173,17 @@ public class Wolf : MonoBehaviour
                             GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
                             GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
                             GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
+                            GameObject[] goldenSheep = GameObject.FindGameObjectsWithTag("Golden");
 
-                            foreach (GameObject sheep in unshearedSheep)
-                            {
-                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
-                                {
-                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
-                                }
-                            }
-                            foreach (GameObject sheep in shearedSheep)
-                            {
-                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
-                                {
-                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
-                                }
-                            }
-                            foreach (GameObject sheep in clothedSheep)
-                            {
-                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
-                                {
-                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
-                                }
-                            }
+                            GameObject[] allSheep = unshearedSheep.Concat(shearedSheep).ToArray().Concat(clothedSheep).ToArray().Concat(goldenSheep).ToArray();
 
+                            foreach (GameObject sheep in allSheep)
+                            {
+                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
+                                {
+                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
+                                }
+                            }
                         }
                     }
                 }
