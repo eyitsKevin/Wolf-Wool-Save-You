@@ -149,6 +149,10 @@ public class Wolf : MonoBehaviour
                     {
                         GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(true);
                         escapeTimer -= Time.deltaTime;
+                        CameraPan pan = Camera.main.GetComponent<CameraPan>();
+                        pan.player = this.gameObject;
+                        pan.GoTo(new Vector3(219, -40, 0), 0);
+                        pan.distanceMargin = 0.5f;
                     }
 
                     if (escapeTimer <= 0)
