@@ -57,12 +57,16 @@ public class Dialogue : MonoBehaviour
                 fyvMessage.SetActive(true);
             }
             fyvTimer -= Time.deltaTime;
+
+            if (fyvTimer <= 3) // Allow wolf to move shortly before prompt disappears
+            {
+                wolf.GetComponent<Wolf>().dialogueActive = false;
+            }
         }
 
         if (fyvTimer <= 0)
         {
             fyvMessage.SetActive(false);
-            wolf.GetComponent<Wolf>().dialogueActive = false;
         }
     }
     IEnumerator Type()
@@ -76,31 +80,38 @@ public class Dialogue : MonoBehaviour
 
     public void NextSentence()
     {
-        audioSource.Play();
-        textDisplayAnimation.SetTrigger("Change");
-        continueButtons.SetActive(false);
-
-        if (index < sentences.Length - 1)
+        if (textDisplay.text == sentences[index])
         {
-            index++;
-            textDisplay.text = "";
-            StartCoroutine(Type());
-        } 
-        else
-        {
-            textDisplay.text = "";
+            audioSource.Play();
+            textDisplayAnimation.SetTrigger("Change");
             continueButtons.SetActive(false);
-            textPanelAnimation.SetTrigger("Close");
-            textPanelAnimation.ResetTrigger("Open");
-        }
 
-        if (index == sentences.Length - 1 && !findYourVoice && SceneManager.GetActiveScene().name == "UpdatedMap")
+            if (index < sentences.Length - 1)
+            {
+                index++;
+                textDisplay.text = "";
+                StartCoroutine(Type());
+            }
+            else
+            {
+                textDisplay.text = "";
+                continueButtons.SetActive(false);
+                textPanelAnimation.SetTrigger("Close");
+                textPanelAnimation.ResetTrigger("Open");
+            }
+
+            if (index == sentences.Length - 1 && !findYourVoice && SceneManager.GetActiveScene().name == "UpdatedMap")
+            {
+                CameraPan pan = Camera.main.GetComponent<CameraPan>();
+                pan.player = wolf;
+                pan.GoTo(new Vector3(212.7f, 1, 0), 2);
+                pan.distanceMargin = 0.5f;
+                findYourVoice = true;
+            }
+        }
+        else // prevent dialogue skipping
         {
-            CameraPan pan = Camera.main.GetComponent<CameraPan>();
-            pan.player = wolf;
-            pan.GoTo(new Vector3(212.7f, 1, 0), 2);
-            pan.distanceMargin = 0.5f;
-            findYourVoice = true;
+            return;
         }
     }
 }
