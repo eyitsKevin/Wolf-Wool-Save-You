@@ -22,6 +22,8 @@ public class Wolf : MonoBehaviour
     bool isMoving;
     bool invincible;
     public bool dialogueActive;
+    public bool escape;
+    float escapeTimer;
     int currentHealth;
 
     void Start()
@@ -38,6 +40,8 @@ public class Wolf : MonoBehaviour
         targetPosition = new Vector2Int(0, 0);
         mAnimator = GetComponent<Animator>();
         audioSources = GetComponents<AudioSource>();
+        escape = false;
+        escapeTimer = 5;
 
         if (healthBar != null)
         {
@@ -88,9 +92,9 @@ public class Wolf : MonoBehaviour
                 if (Input.GetMouseButtonDown(0) && !woolHeld)
                 {
                     RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
                     if (mouseHit.collider != null)
                     {
+                        Debug.Log(mouseHit.collider.gameObject.name);
                         if (mouseHit.collider.tag == "Unsheared")
                         {
                             if ((transform.position - mouseHit.transform.position).magnitude < 3)
@@ -118,6 +122,7 @@ public class Wolf : MonoBehaviour
                                 audioSources[0].Play();
                                 mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
                                 this.howl = true;
+                                this.escape = true;
                                 print("VOICE ACQUIRED");
                             }
                         }
@@ -139,6 +144,17 @@ public class Wolf : MonoBehaviour
                 // Press space to trigger howl if acquired and howl cooldown reaches 0
                 if (howl)
                 {
+                    if (escape && escapeTimer > 0)
+                    {
+                        GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(true);
+                        escapeTimer -= Time.deltaTime;
+                    }
+
+                    if (escapeTimer <= 0)
+                    {
+                        GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(false);
+                    }
+
                     if (howlCooldown <= 0)
                     {
                         if (Input.GetKeyDown(KeyCode.Space))
