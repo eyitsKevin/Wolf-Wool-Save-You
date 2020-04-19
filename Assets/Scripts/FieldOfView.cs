@@ -62,11 +62,19 @@ public class FieldOfView : MonoBehaviour
             // Prioritize chasing sweater over player (if naked of course)
             if (visibleTargets.Contains(wolf.transform) && aSheep.pathingType != SheepBehavior.SheepPathingType.ToSweater)
             {
-                Debug.Log("Wolf found!");
+                // Debug.Log("Wolf found!");
                 aSheep.SetOldPos();
                 aSheep.pathingType = SheepBehavior.SheepPathingType.ToPlayer;
                 aSheep.travelPath.Clear();
                 aSheep.seesPlayer = true;
+                if (aSheep.goldenSheep)
+                {
+                    aSheep.giveUpTimer = SheepBehavior.GIVE_UP_TIMER_MAX_G;
+                }
+                else
+                {
+                    aSheep.giveUpTimer = SheepBehavior.GIVE_UP_TIMER_MAX;
+                }
                 //wolf.escaped = false;
             }
             else

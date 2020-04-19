@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +14,7 @@ public class Wolf : MonoBehaviour
     public bool woolHeld;
     public bool escaped;
     public bool howl;
+    public bool sheepSpeedBoost;
     public float howlCooldown;
     public int maxHealth = 4;
     public HealthBar healthBar;
@@ -22,6 +24,8 @@ public class Wolf : MonoBehaviour
     bool isMoving;
     bool invincible;
     public bool dialogueActive;
+    public bool escape;
+    float escapeTimer;
     int currentHealth;
 
     void Start()
@@ -33,11 +37,14 @@ public class Wolf : MonoBehaviour
 
         woolHeld = false;
         escaped = true;
+        sheepSpeedBoost = false;
         howl = false;
         howlCooldown = 0;
         targetPosition = new Vector2Int(0, 0);
         mAnimator = GetComponent<Animator>();
         audioSources = GetComponents<AudioSource>();
+        escape = false;
+        escapeTimer = 5;
 
         if (healthBar != null)
         {
@@ -88,9 +95,9 @@ public class Wolf : MonoBehaviour
                 if (Input.GetMouseButtonDown(0) && !woolHeld)
                 {
                     RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
                     if (mouseHit.collider != null)
                     {
+                        // Debug.Log(mouseHit.collider.gameObject.name);
                         if (mouseHit.collider.tag == "Unsheared")
                         {
                             if ((transform.position - mouseHit.transform.position).magnitude < 3)
@@ -118,6 +125,7 @@ public class Wolf : MonoBehaviour
                                 audioSources[0].Play();
                                 mouseHit.collider.gameObject.GetComponent<DungeonChest>().OpenChest();
                                 this.howl = true;
+                                this.escape = true;
                                 print("VOICE ACQUIRED");
                             }
                         }
@@ -139,6 +147,36 @@ public class Wolf : MonoBehaviour
                 // Press space to trigger howl if acquired and howl cooldown reaches 0
                 if (howl)
                 {
+                    GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
+                    GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
+                    GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
+                    GameObject[] goldenSheep = GameObject.FindGameObjectsWithTag("Golden");
+
+                    GameObject[] allSheep = unshearedSheep.Concat(shearedSheep).ToArray().Concat(clothedSheep).ToArray().Concat(goldenSheep).ToArray();
+
+                    if (!sheepSpeedBoost)
+                    {
+                        foreach (GameObject sheep in allSheep) // increase all sheeps' movement speed during escape sequence
+                        {
+                            sheep.GetComponent<SheepBehavior>().movementSpeed *= 1.5f;
+                        }
+                        sheepSpeedBoost = true;
+                    }
+                    if (escape && escapeTimer > 0)
+                    {
+                        GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(true);
+                        escapeTimer -= Time.deltaTime;
+                        CameraPan pan = Camera.main.GetComponent<CameraPan>();
+                        pan.player = this.gameObject;
+                        pan.GoTo(new Vector3(219, -40, 0), 0);
+                        pan.distanceMargin = 0.5f;
+                    }
+
+                    if (escapeTimer <= 0)
+                    {
+                        GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(false);
+                    }
+
                     if (howlCooldown <= 0)
                     {
                         if (Input.GetKeyDown(KeyCode.Space))
@@ -153,32 +191,13 @@ public class Wolf : MonoBehaviour
 
                         if (howlCooldown >= 9)
                         {
-                            GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
-                            GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
-                            GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
-
-                            foreach (GameObject sheep in unshearedSheep)
+                            foreach (GameObject sheep in allSheep)
                             {
                                 if ((sheep.transform.position - this.transform.position).magnitude < 10)
                                 {
                                     sheep.GetComponent<SheepBehavior>().IsNowFleeing();
                                 }
                             }
-                            foreach (GameObject sheep in shearedSheep)
-                            {
-                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
-                                {
-                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
-                                }
-                            }
-                            foreach (GameObject sheep in clothedSheep)
-                            {
-                                if ((sheep.transform.position - this.transform.position).magnitude < 10)
-                                {
-                                    sheep.GetComponent<SheepBehavior>().IsNowFleeing();
-                                }
-                            }
-
                         }
                     }
                 }

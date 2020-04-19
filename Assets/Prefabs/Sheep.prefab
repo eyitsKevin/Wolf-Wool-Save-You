@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 869997603623698266}
   - component: {fileID: 6990770294342184693}
   - component: {fileID: 867778221274922238}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: -7458977790026330516}
   - component: {fileID: 869997603937407312}
   - component: {fileID: 2367908550536300778}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sheep
   m_TagString: Unsheared
   m_Icon: {fileID: 0}
@@ -225,13 +225,18 @@ MonoBehaviour:
   travelPath: []
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   returnedToOldPos: 0
   PatrolPlot: {fileID: 0}
+  seesPlayer: 0
+  escapeSequence: 0
+  lastChaseBegun: 0
+  giveUpTimer: 0
   movingToNextTile: 0
   fleeing: 0
   howlTimer: 0
   sweaterPos: {x: 0, y: 0}
+  goldenSheep: 0
   nextPos: {x: 0, y: 0}
   isMoving: 0
 --- !u!1 &869997604526469201
@@ -246,7 +251,7 @@ GameObject:
   - component: {fileID: 869997604526469207}
   - component: {fileID: 2259965851253772577}
   - component: {fileID: 2162273159789513234}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Naked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -361,7 +366,7 @@ GameObject:
   - component: {fileID: 869997605381944277}
   - component: {fileID: 4789334347179967311}
   - component: {fileID: 1490351946462637171}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sweater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -474,7 +479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6645288152884317633}
   - component: {fileID: 3029317861691876472}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Shear Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +518,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -531,8 +536,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -335957055
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a1c74466ee0d01e41b4fdbe7d8505f3b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -552,10 +557,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 869997603937407308}
     m_Modifications:
+    - target: {fileID: 5685228371504676861, guid: fc2e43b498beef945a7ba2be80ca7515,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 5685228372374378164, guid: fc2e43b498beef945a7ba2be80ca7515,
         type: 3}
       propertyPath: m_Name
       value: DetectorComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5685228372374378164, guid: fc2e43b498beef945a7ba2be80ca7515,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5685228372374378171, guid: fc2e43b498beef945a7ba2be80ca7515,
         type: 3}
