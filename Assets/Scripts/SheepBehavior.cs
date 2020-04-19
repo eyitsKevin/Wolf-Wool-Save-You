@@ -26,6 +26,7 @@ public class SheepBehavior : MonoBehaviour
     }
 
     public const float GIVE_UP_TIMER_MAX = 5;
+    public const float HOWL_DURATION = 5;
 
     public GameObject DEBUG_OBJECT;
     // public data members
@@ -52,6 +53,7 @@ public class SheepBehavior : MonoBehaviour
     public bool fleeing;
     public float howlTimer;
     public Vector2 sweaterPos;
+    public bool goldenSheep = false;
 
     // private data members
     Transform slot;
@@ -113,7 +115,7 @@ public class SheepBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (escapeSequence && PositionToWorldVector2Int((Vector2)transform.position).x >= RoomManager.MAINAREA_INNER_X)
+        if (pathingType != SheepPathingType.Fleeing && escapeSequence && PositionToWorldVector2Int((Vector2)transform.position).x >= RoomManager.MAINAREA_INNER_X)
         {
             SetOldPos();
             pathingType = SheepPathingType.ToPlayer;
@@ -457,9 +459,12 @@ public class SheepBehavior : MonoBehaviour
 
     public void IsNowFleeing()
     {
-        SetOldPos();
-        pathingType = SheepPathingType.Fleeing;
-        howlTimer = 3;
+        if (!goldenSheep)
+        {
+            SetOldPos();
+            pathingType = SheepPathingType.Fleeing;
+            howlTimer = HOWL_DURATION;
+        }
     }
 
     void OldDecisionMaking()
