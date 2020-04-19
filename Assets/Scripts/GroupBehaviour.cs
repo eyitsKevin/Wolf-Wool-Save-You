@@ -132,7 +132,7 @@ public class GroupBehaviour : MonoBehaviour
             Vector2Int slotPos = (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(slots[i].position);
             if (GridManager.Instance.isWalkableTile(slotPos))
             {
-                Debug.Log("Assigning walkable slot");
+                // Debug.Log("Assigning walkable slot");
                 slots_walkable[i] = slots[i];
             }
             // if slot is not walkable, find a walkable spot 0.2f from the obstacle
@@ -156,7 +156,7 @@ public class GroupBehaviour : MonoBehaviour
     void CheckFormationIntegrity()
     {
         bool slowdown = false;
-        Debug.Log("Checking if formation is A-ok");
+        // Debug.Log("Checking if formation is A-ok");
         // if any sheep is further than some certain range, slow down the formation so sheep can catch up
         for (int i = 0; i < slots.Count; i++)
         {

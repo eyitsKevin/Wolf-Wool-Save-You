@@ -250,13 +250,13 @@ public class SheepBehavior : MonoBehaviour
         {
             if (giveUpTimer <= 0)
             {
-                Debug.Log("Giving up");
+                // Debug.Log("Giving up");
                 pathingType = SheepPathingType.Returning;
                 travelPath.Clear();
             }
             else
             {
-                Debug.Log(giveUpTimer);
+                // Debug.Log(giveUpTimer);
                 giveUpTimer -= 1.0f * Time.deltaTime;
                 travelPath.Clear();
             }

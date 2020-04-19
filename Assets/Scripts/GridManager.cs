@@ -49,7 +49,7 @@ public class GridManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        /*if (Input.GetMouseButton(0))
         {
             Vector3 world = camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridpos = walkableTilemap.WorldToCell(world);

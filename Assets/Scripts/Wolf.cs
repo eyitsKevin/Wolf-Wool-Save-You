@@ -95,7 +95,7 @@ public class Wolf : MonoBehaviour
                     RaycastHit2D mouseHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                     if (mouseHit.collider != null)
                     {
-                        Debug.Log(mouseHit.collider.gameObject.name);
+                        // Debug.Log(mouseHit.collider.gameObject.name);
                         if (mouseHit.collider.tag == "Unsheared")
                         {
                             if ((transform.position - mouseHit.transform.position).magnitude < 3)
