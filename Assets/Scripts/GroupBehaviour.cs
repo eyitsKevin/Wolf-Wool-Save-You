@@ -28,6 +28,8 @@ public class GroupBehaviour : MonoBehaviour
     [HideInInspector]
     public Transform anchor;
 
+    private List<Transform> slots_walkable = new List<Transform>();
+
     private bool isInitialized = false;
     // the forward boolean is to know whether we are going back or forth on the patrol route (forward means forth, else back)
     private bool forward = true;
@@ -50,7 +52,11 @@ public class GroupBehaviour : MonoBehaviour
         for(int i = 0; i < slots.Count; i++)
         {
             slots[i].parent = anchor;
-            SheepGroup[i].GetComponent<SheepBehavior>().SetSlot(slots[i]);
+            Transform walkable = new GameObject().transform;
+            walkable.position = slots[i].position;
+            slots_walkable.Add(walkable);
+
+            SheepGroup[i].GetComponent<SheepBehavior>().SetSlot(slots_walkable[i]);
         }
 
         // populate the patrol nodes list
@@ -62,6 +68,7 @@ public class GroupBehaviour : MonoBehaviour
     {
         if (isInitialized)
         {
+            PlaceWalkableSlots();
             Arrive();
         }   
     }
@@ -113,6 +120,33 @@ public class GroupBehaviour : MonoBehaviour
         }
 
         transform.position = (Vector2)transform.position + velocity * Time.deltaTime;
+    }
+
+    void PlaceWalkableSlots()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            // if slot is walkable, sheep can go to it
+            Vector2Int slotPos = (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(slots[i].position);
+            if (GridManager.Instance.isWalkableTile(slotPos))
+            {
+                slots_walkable[i] = slots[i];
+            }
+            // if slot is not walkable, find a walkable spot 0.2f from the obstacle
+            else
+            {
+                var rayDirection = slots[i].position - transform.position;
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, rayDirection.magnitude, LayerMask.NameToLayer("Obstacle"));
+                if (hit)
+                {
+                    // if the slot is unwalkable, find nearest spot before that point from the anchor
+                    float distanceFromAnchor = (hit.point - (Vector2)transform.position).magnitude;
+                    distanceFromAnchor -= 0.2f;
+                    slots_walkable[i].position = transform.position + rayDirection.normalized * distanceFromAnchor;
+                }
+            }
+        }
+        
     }
 
     void CheckFormationIntegrity()
