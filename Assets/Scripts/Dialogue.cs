@@ -91,7 +91,7 @@ public class Dialogue : MonoBehaviour
             textPanelAnimation.ResetTrigger("Open");
         }
 
-        if (index == sentences.Length - 1 && !findYourVoice)
+        if (index == sentences.Length - 1 && !findYourVoice && SceneManager.GetActiveScene().name == "UpdatedMap")
         {
             CameraPan pan = Camera.main.GetComponent<CameraPan>();
             pan.player = wolf;
