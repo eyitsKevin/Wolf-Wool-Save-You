@@ -16,7 +16,10 @@ public class Dialogue : MonoBehaviour
     public Animator textPanelAnimation;
     private AudioSource audioSource;
 
-    Wolf wolf;
+    GameObject wolf;
+    GameObject fyvMessage;
+    public bool findYourVoice;
+    public float fyvTimer;
 
     private void Awake()
     {
@@ -26,7 +29,9 @@ public class Dialogue : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(Type());
-        wolf = GameObject.Find("Wolf").GetComponent<Wolf>();
+        wolf = GameObject.Find("Wolf");
+        fyvMessage = GameObject.Find("UI").transform.GetChild(3).gameObject;
+        fyvTimer = 15;
     }
 
     private void Update()
@@ -38,7 +43,23 @@ public class Dialogue : MonoBehaviour
 
         if (index < sentences.Length - 1) // Prevent wolf input during dialogue
         {
-            wolf.dialogueActive = true;
+            wolf.GetComponent<Wolf>().dialogueActive = true;
+        }
+
+        if (findYourVoice && fyvTimer > 0)
+        {
+            Vector3 chestPosition = new Vector3(212.7f, 1, 0);
+            if ((Camera.main.transform.position - chestPosition).magnitude < 1)
+            {
+                fyvMessage.SetActive(true);
+            }
+            fyvTimer -= Time.deltaTime;
+        }
+
+        if (fyvTimer <= 0)
+        {
+            fyvMessage.SetActive(false);
+            wolf.GetComponent<Wolf>().dialogueActive = false;
         }
     }
     IEnumerator Type()
@@ -68,7 +89,15 @@ public class Dialogue : MonoBehaviour
             continueButtons.SetActive(false);
             textPanelAnimation.SetTrigger("Close");
             textPanelAnimation.ResetTrigger("Open");
-            wolf.dialogueActive = false;
+        }
+
+        if (index == sentences.Length - 1 && !findYourVoice)
+        {
+            CameraPan pan = Camera.main.GetComponent<CameraPan>();
+            pan.player = wolf;
+            pan.GoTo(new Vector3(212.7f, 1, 0), 2);
+            pan.distanceMargin = 0.5f;
+            findYourVoice = true;
         }
     }
 }

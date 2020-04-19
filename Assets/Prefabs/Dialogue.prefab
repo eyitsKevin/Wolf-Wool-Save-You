@@ -131,7 +131,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -596.65234, w: -70.749275}
+  m_margin: {x: 0, y: 0, z: -1029.3209, w: -70.749275}
   m_textInfo:
     textComponent: {fileID: 2319693976116101967}
     characterCount: 0
@@ -233,6 +233,8 @@ MonoBehaviour:
   continueButtons: {fileID: 2319693977648735220}
   textDisplayAnimation: {fileID: 2319693976116101965}
   textPanelAnimation: {fileID: 2319693976750386859}
+  findYourVoice: 0
+  fyvTimer: 0
 --- !u!82 &2319693976575658774
 AudioSource:
   m_ObjectHideFlags: 0
