@@ -64,7 +64,7 @@ public class SheepBehavior : MonoBehaviour
     Vector3 oldScale;
     Quaternion oldRot;
     Transform detectionComponent;
-    private float current_velocity;
+    public float current_velocity;
 
 
     Wolf wolf;

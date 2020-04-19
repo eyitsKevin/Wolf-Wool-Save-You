@@ -14,6 +14,7 @@ public class Wolf : MonoBehaviour
     public bool woolHeld;
     public bool escaped;
     public bool howl;
+    public bool sheepSpeedBoost;
     public float howlCooldown;
     public int maxHealth = 4;
     public HealthBar healthBar;
@@ -36,6 +37,7 @@ public class Wolf : MonoBehaviour
 
         woolHeld = false;
         escaped = true;
+        sheepSpeedBoost = false;
         howl = false;
         howlCooldown = 0;
         targetPosition = new Vector2Int(0, 0);
@@ -145,6 +147,21 @@ public class Wolf : MonoBehaviour
                 // Press space to trigger howl if acquired and howl cooldown reaches 0
                 if (howl)
                 {
+                    GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
+                    GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
+                    GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
+                    GameObject[] goldenSheep = GameObject.FindGameObjectsWithTag("Golden");
+
+                    GameObject[] allSheep = unshearedSheep.Concat(shearedSheep).ToArray().Concat(clothedSheep).ToArray().Concat(goldenSheep).ToArray();
+
+                    if (!sheepSpeedBoost)
+                    {
+                        foreach (GameObject sheep in allSheep) // increase all sheeps' movement speed during escape sequence
+                        {
+                            sheep.GetComponent<SheepBehavior>().movementSpeed *= 1.5f;
+                        }
+                        sheepSpeedBoost = true;
+                    }
                     if (escape && escapeTimer > 0)
                     {
                         GameObject.Find("UI").transform.GetChild(4).gameObject.SetActive(true);
@@ -174,13 +191,6 @@ public class Wolf : MonoBehaviour
 
                         if (howlCooldown >= 9)
                         {
-                            GameObject[] unshearedSheep = GameObject.FindGameObjectsWithTag("Unsheared");
-                            GameObject[] shearedSheep = GameObject.FindGameObjectsWithTag("Sheared");
-                            GameObject[] clothedSheep = GameObject.FindGameObjectsWithTag("Clothed");
-                            GameObject[] goldenSheep = GameObject.FindGameObjectsWithTag("Golden");
-
-                            GameObject[] allSheep = unshearedSheep.Concat(shearedSheep).ToArray().Concat(clothedSheep).ToArray().Concat(goldenSheep).ToArray();
-
                             foreach (GameObject sheep in allSheep)
                             {
                                 if ((sheep.transform.position - this.transform.position).magnitude < 10)
