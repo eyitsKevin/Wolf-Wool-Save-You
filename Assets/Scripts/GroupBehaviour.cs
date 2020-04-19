@@ -16,11 +16,11 @@ public class GroupBehaviour : MonoBehaviour
     [SerializeField]
     float max_velocity = 1.8f;
     [SerializeField]
-    float max_acceleration = 1f;
+    float max_acceleration = 100f;
     [SerializeField]
-    float slowdown_radius = 3f;
+    float slowdown_radius = 0.5f;
     [SerializeField]
-    float arrival_radius = 1.2f;
+    float arrival_radius = 0.2f;
     [SerializeField]
     float slowdown_velocity = 0.5f;
     [SerializeField]
@@ -56,7 +56,9 @@ public class GroupBehaviour : MonoBehaviour
             walkable.position = slots[i].position;
             slots_walkable.Add(walkable);
 
-            SheepGroup[i].GetComponent<SheepBehavior>().SetSlot(slots_walkable[i]);
+            SheepBehavior sb = SheepGroup[i].GetComponent<SheepBehavior>();
+            sb.SetSlot(slots_walkable[i]);
+            sb.pathingType = SheepBehavior.SheepPathingType.Patrolling;
         }
 
         // populate the patrol nodes list
@@ -130,6 +132,7 @@ public class GroupBehaviour : MonoBehaviour
             Vector2Int slotPos = (Vector2Int)GridManager.Instance.walkableTilemap.WorldToCell(slots[i].position);
             if (GridManager.Instance.isWalkableTile(slotPos))
             {
+                Debug.Log("Assigning walkable slot");
                 slots_walkable[i] = slots[i];
             }
             // if slot is not walkable, find a walkable spot 0.2f from the obstacle
@@ -145,6 +148,7 @@ public class GroupBehaviour : MonoBehaviour
                     slots_walkable[i].position = transform.position + rayDirection.normalized * distanceFromAnchor;
                 }
             }
+            SheepGroup[i].GetComponent<SheepBehavior>().SetSlot(slots_walkable[i]);
         }
         
     }

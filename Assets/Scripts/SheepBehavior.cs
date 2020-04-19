@@ -84,8 +84,7 @@ public class SheepBehavior : MonoBehaviour
         pathFound = false;
         movingToNextTile = false;
         travelPath = new List<Vector2>();
-        pathingType = SheepPathingType.Stationary; // stationary, unless they have patrol spots
-        oldPathingType = SheepPathingType.Stationary;
+        oldPathingType = pathingType;
         nextPos = transform.position;
         oldPos = nextPos;
         returnedToOldPos = true;
@@ -96,10 +95,11 @@ public class SheepBehavior : MonoBehaviour
         howlTimer = 0;
         detectionComponent = transform.GetChild(3);
         // AI has a patrol spot
+
         if (PatrolPlot != null)
         {
             pathingType = SheepPathingType.Patrolling;
-            Debug.Log("I am " + gameObject.name + " and I am initializing my patrol route");
+            // Debug.Log("I am " + gameObject.name + " and I am initializing my patrol route");
             foreach (Transform child in PatrolPlot.transform)
             {
                 if (child.tag == "PatrolNode")
