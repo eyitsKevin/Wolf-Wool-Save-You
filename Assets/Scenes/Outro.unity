@@ -30017,13 +30017,15 @@ MonoBehaviour:
 
     Music:
 
-    Hitman 2 Silent Assassin
-    - Main Theme
+    ERA - Ameno
+
+    Hitman
+    2 Silent Assassin - Main Theme
 
     Fallout 1 OST - City of Lost Angels
 
-    Mozart - Requiem Dies
-    Irae
+    Mozart
+    - Requiem Dies Irae
 
     Maple Story OST - Amoria
 
@@ -30097,12 +30099,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: -150.04889, w: 0}
   m_textInfo:
     textComponent: {fileID: 1926638054}
-    characterCount: 226
+    characterCount: 238
     spriteCount: 0
-    spaceCount: 39
-    wordCount: 38
+    spaceCount: 42
+    wordCount: 41
     linkCount: 0
-    lineCount: 12
+    lineCount: 13
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
