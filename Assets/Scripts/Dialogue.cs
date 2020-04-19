@@ -30,7 +30,10 @@ public class Dialogue : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(Type());
         wolf = GameObject.Find("Wolf");
-        fyvMessage = GameObject.Find("UI").transform.GetChild(3).gameObject;
+        if (SceneManager.GetActiveScene().name == "UpdatedMap")
+        {
+            fyvMessage = GameObject.Find("UI").transform.GetChild(3).gameObject;
+        }
         fyvTimer = 15;
     }
 
@@ -49,7 +52,7 @@ public class Dialogue : MonoBehaviour
         if (findYourVoice && fyvTimer > 0)
         {
             Vector3 chestPosition = new Vector3(212.7f, 1, 0);
-            if ((Camera.main.transform.position - chestPosition).magnitude < 1)
+            if ((Camera.main.transform.position - chestPosition).magnitude < 1 && SceneManager.GetActiveScene().name == "UpdatedMap")
             {
                 fyvMessage.SetActive(true);
             }
