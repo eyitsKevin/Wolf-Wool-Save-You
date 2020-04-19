@@ -6,6 +6,7 @@ public class Music : MonoBehaviour
     public AudioSource[] audioSources;
     Scene scene;
     public bool MainMenu;
+    public bool Intro;
     public bool UpdatedMap;
     public bool Alert;
     public bool Outro;
@@ -31,6 +32,7 @@ public class Music : MonoBehaviour
     {
         audioSources = GetComponents<AudioSource>();
         MainMenu = false;
+        Intro = false;
         UpdatedMap = false;
         Alert = false;
         Outro = false;
@@ -50,7 +52,22 @@ public class Music : MonoBehaviour
             audioSources[1].Stop();
             audioSources[2].Stop();
             audioSources[3].Stop();
+            audioSources[4].Stop();
             MainMenu = true;
+            Intro = false;
+            UpdatedMap = false;
+            Alert = false;
+            Outro = false;
+        }
+        if (scene.name == "Intro" && !Intro)
+        {
+            audioSources[0].Stop();
+            audioSources[1].Play();
+            audioSources[2].Stop();
+            audioSources[3].Stop();
+            audioSources[4].Stop();
+            MainMenu = false;
+            Intro = true;
             UpdatedMap = false;
             Alert = false;
             Outro = false;
@@ -58,10 +75,12 @@ public class Music : MonoBehaviour
         if (scene.name == "UpdatedMap" && !UpdatedMap)
         {
             audioSources[0].Stop();
-            audioSources[1].Play();
-            audioSources[2].Stop();
+            audioSources[1].Stop();
+            audioSources[2].Play();
             audioSources[3].Stop();
+            audioSources[4].Stop();
             MainMenu = false;
+            Intro = false;
             UpdatedMap = true;
             Alert = false;
             Outro = false;
@@ -71,9 +90,11 @@ public class Music : MonoBehaviour
         {
             audioSources[0].Stop();
             audioSources[1].Stop();
-            audioSources[2].Play();
-            audioSources[3].Stop();
+            audioSources[2].Stop();
+            audioSources[3].Play();
+            audioSources[4].Stop();
             MainMenu = false;
+            Intro = false;
             UpdatedMap = true;
             Alert = true;
             Outro = false;
@@ -84,8 +105,10 @@ public class Music : MonoBehaviour
             audioSources[0].Stop();
             audioSources[1].Stop();
             audioSources[2].Stop();
-            audioSources[3].Play();
+            audioSources[3].Stop();
+            audioSources[4].Play();
             MainMenu = false;
+            Intro = false;
             UpdatedMap = false;
             Alert = false;
             Outro = true;
